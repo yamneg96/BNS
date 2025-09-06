@@ -61,7 +61,7 @@ bed-notification-system/
 ### 1️⃣ Clone the repository
 
 ```
-git clone https://github.com/your-username/bed-notification-system.git
+git clone https://github.com/yamneg96/bed-notification-system.git
 cd bed-notification-system
 ```
 
