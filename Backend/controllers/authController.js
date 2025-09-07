@@ -114,6 +114,32 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
+// Reset password using OTP
+export const resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.resetOtp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+    if (user.resetOtpExpireAt < Date.now()) return res.status(400).json({ message: "OTP expired" });
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.resetOtp = "";
+    user.resetOtpExpireAt = 0;
+    await user.save();
+
+    res.json({ message: "Password reset successfully. You can now login with your new password." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 // Login
 export const loginUser = async (req, res) => {
