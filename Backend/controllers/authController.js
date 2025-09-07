@@ -68,6 +68,30 @@ export const verifyUserOtp = async (req, res) => {
   }
 };
 
+export const resendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.isAccountVerified)
+      return res.status(400).json({ message: "Account already verified" });
+
+    const otp = generateOtp();
+    user.verifyOtp = otp;
+    user.verifyOtpExpireAt = Date.now() + 10 * 60 * 1000; // 10 min
+    await user.save();
+
+    await sendEmail(email, "Resend OTP", `Your new OTP is: ${otp}`);
+
+    res.json({ message: "OTP resent. Please check your email." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 
 // Login
 export const loginUser = async (req, res) => {

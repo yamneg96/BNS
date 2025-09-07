@@ -1,12 +1,16 @@
 import express from "express";
-import { registerUser, loginUser, getProfile } from "../controllers/authController.js";
+import { registerUser, loginUser, getProfile, verifyUserOtp, resendOtp } from "../controllers/authController.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+
+router.post("/verify-otp", verifyUserOtp);
 router.get("/profile", protect, getProfile);
+router.post("/resend-otp", resendOtp);
+
 
 // Example RBAC: only admins can list all users
 import User from "../models/User.js";
