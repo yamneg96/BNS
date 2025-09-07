@@ -75,18 +75,21 @@ export const loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user.id, user.role),
-      });
-    } else {
-      res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!user.isAccountVerified)
+      return res.status(401).json({ message: "Please verify your email first" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    res.json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user.id, user.role),
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
