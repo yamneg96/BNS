@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard'
 import Notifications from './pages/Notifications'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Admin from "./pages/Admin";
+import VerifyOTP from "./pages/VerifyOTP";
 
 function App() {
   return (
@@ -13,12 +15,14 @@ function App() {
       <Navbar />
       <main className="text-center mt-6">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/beds" element={<Beds />} />
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<Dashboard />} />
         </Routes>
       </main>
     </div>
