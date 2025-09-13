@@ -4,12 +4,12 @@ import { useAuth } from "../context/AuthContext";
 import bedIcon from "../assets/medical-bed.png";
 
 const Navbar = () => {
-  const { user, logout } = useAuth;
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    navigate("/");
     logout();
-    navigate("/login");
   };
 
   return (
@@ -24,9 +24,9 @@ const Navbar = () => {
         <div className="flex items-center space-x-4 font-medium">
           {user ? (
             <>
-              <span className="text-gray-300 hidden md:block">
+              <Link className="text-gray-300 hidden md:block">
                 Hello, {user.name} ({user.role})
-              </span>
+              </Link>
               {user.role === "admin" && (
                 <Link to="/all-users" className="hover:text-blue-400">
                   Users
@@ -38,9 +38,9 @@ const Navbar = () => {
               <Link to="/beds" className="hover:text-blue-400">
                 Beds
               </Link>
-              <button onClick={handleLogout} className="hover:text-red-400">
+              <Link onClick={handleLogout} className="hover:text-red-400">
                 Logout
-              </button>
+              </Link>
             </>
           ) : (
             <>

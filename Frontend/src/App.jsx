@@ -27,7 +27,7 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/" element={<Home />} />
+            <Route path="*" element={<Home />} />
           </Routes>
         </main>
       </div>
