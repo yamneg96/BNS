@@ -45,7 +45,7 @@ const Dashboard = () => {
               You have privileged access to manage the system.
             </p>
             <Link
-              to="/all-users"
+              to="/admin"
               className="inline-block px-4 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200"
             >
               View All Users

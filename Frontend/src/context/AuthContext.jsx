@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const profile = await getProfileService(token);
+          console.log(profile);
           setUser(profile);
         } catch (error) {
           console.error("Failed to fetch user profile:", error);
@@ -46,7 +47,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password, role) => {
-    return await registerService(name, email, password, role);
+    const regData =  await registerService(name, email, password, role);
+    console.log(regData);
+    return regData;
   };
 
   const checkOtp = async (email, otp) => {

@@ -114,7 +114,7 @@ const VerifyOTP = () => {
           ) : (
             <button
               onClick={handleResend}
-              className="font-medium text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
+              className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
               disabled={timer > 0}
             >
               Resend OTP

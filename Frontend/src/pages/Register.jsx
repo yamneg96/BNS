@@ -10,7 +10,7 @@ const Register = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { register } = useAuth;
+  const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +18,13 @@ const Register = () => {
       setError("");
       setMessage("Registering...");
       const response = await register(name, email, password, role);
+      console.log(response);
       setMessage(response.message);
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
-      setError(err);
+      setError(err.message);
+      console.log(err);
+      console.log(err.message);
       setMessage("");
     }
   };
@@ -51,7 +54,7 @@ const Register = () => {
               {error}
             </div>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-md space-y-2">
             <div>
               <label htmlFor="name" className="sr-only">
                 Name
@@ -61,7 +64,7 @@ const Register = () => {
                 name="name"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -77,7 +80,7 @@ const Register = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +96,7 @@ const Register = () => {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -111,7 +114,7 @@ const Register = () => {
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               >
                 <option value="c1">C1</option>
-                <option value="c1">C2</option>
+                <option value="c2">C2</option>
                 <option value="intern">Intern</option>
                 <option value="admin">Admin</option>
               </select>
@@ -120,7 +123,7 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="cursor-pointer group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Sign up
             </button>
