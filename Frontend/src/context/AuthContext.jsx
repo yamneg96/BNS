@@ -11,8 +11,9 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken] = useState(sessionStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -21,10 +22,11 @@ export const AuthProvider = ({ children }) => {
           const profile = await getProfileService(token);
           console.log(profile);
           setUser(profile);
+          setUserEmail(profile.email)
         } catch (error) {
           console.error("Failed to fetch user profile:", error);
           setToken(null);
-          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
         }
       }
       setLoading(false);
@@ -36,19 +38,20 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const { token, ...userData } = await loginService(email, password);
     setToken(token);
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
     setUser(userData);
   };
 
   const logout = () => {
     setToken(null);
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setUser(null);
   };
 
   const register = async (name, email, password, role) => {
     const regData =  await registerService(name, email, password, role);
     console.log(regData);
+    setUserEmail(email);
     return regData;
   };
 
@@ -64,6 +67,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        userEmail,
         token,
         loading,
         login,

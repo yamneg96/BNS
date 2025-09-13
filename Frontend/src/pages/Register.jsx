@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {  useAuth } from "../context/AuthContext";
+import {toast} from 'react-hot-toast'
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -23,6 +24,8 @@ const Register = () => {
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
+      toast.error(err)
       console.log(err);
       console.log(err.message);
       setMessage("");

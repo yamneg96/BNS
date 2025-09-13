@@ -9,11 +9,15 @@ const VerifyOTP = () => {
   const [timer, setTimer] = useState(60);
   const location = useLocation();
   const navigate = useNavigate();
-  const { checkOtp, resendVerificationOtp } = useAuth;
-  const email = location.state?.email;
+  const { checkOtp, resendVerificationOtp, userEmail } = useAuth();
 
   useEffect(() => {
-    if (!email) {
+    console.log(userEmail);
+    console.log(location);
+  })
+
+  useEffect(() => {
+    if (!userEmail) {
       navigate("/register");
     }
 
@@ -22,7 +26,7 @@ const VerifyOTP = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [email, navigate]);
+  }, [userEmail, navigate]);
 
   useEffect(() => {
     if (timer < 0) {
@@ -35,7 +39,7 @@ const VerifyOTP = () => {
     try {
       setError("");
       setMessage("Verifying OTP...");
-      await checkOtp(email, otp);
+      await checkOtp(userEmail, otp);
       setMessage("Account verified successfully! Redirecting to login...");
       setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
@@ -48,7 +52,7 @@ const VerifyOTP = () => {
     try {
       setError("");
       setMessage("Resending OTP...");
-      await resendVerificationOtp(email);
+      await resendVerificationOtp(userEmail);
       setMessage("New OTP sent. Please check your email.");
       setTimer(60);
     } catch (err) {
@@ -65,7 +69,7 @@ const VerifyOTP = () => {
             Verify your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            An OTP has been sent to your email: {email}
+            An OTP has been sent to your email: {userEmail}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -90,7 +94,7 @@ const VerifyOTP = () => {
                 type="text"
                 maxLength="6"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}

@@ -8,6 +8,7 @@ export const register = async (name, email, password, role) => {
       password,
       role,
     });
+    console.log(response);
     return response.data;
   } catch (error) {
     throw error.response.data.message;
