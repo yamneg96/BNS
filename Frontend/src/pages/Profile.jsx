@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   if (!user) return <p>Loading...</p>;
 
