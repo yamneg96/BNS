@@ -69,3 +69,25 @@ export const getAllUsers = async (token) => {
     throw error.response.data.message;
   }
 };
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await API.post(`/forgot-password`, { email });
+    return response.data;
+  } catch (error) {
+    throw error.response.data.message;
+  }
+};
+
+export const resetPassword = async (email, otp, newPassword) => {
+  try {
+    const response = await API.post(`/reset-password`, {
+      email,
+      otp,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data.message;
+  }
+};

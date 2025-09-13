@@ -109,7 +109,7 @@ export const forgotPassword = async (req, res) => {
 
     await sendEmail(email, "Reset Your Password", `Your password reset OTP is: ${otp}`);
 
-    res.json({ message: "OTP sent to your email for password reset." });
+    res.json({ email, message: "OTP sent to your email for password reset." });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

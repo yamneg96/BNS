@@ -5,6 +5,8 @@ import {
   getProfile as getProfileService,
   verifyOtp,
   resendOtp,
+  forgotPassword as forgotPasswordService,
+  resetPassword as resetPasswordService,
 } from "../services/auth";
 
 const AuthContext = createContext();
@@ -48,9 +50,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password, role) => {
-    const regData =  await registerService(name, email, password, role);
+    const regData = await registerService(name, email, password, role);
     console.log(regData);
-    setUserEmail(email);
+    setUserEmail(email);//Later to register email.
     return regData;
   };
 
@@ -60,6 +62,18 @@ export const AuthProvider = ({ children }) => {
 
   const resendVerificationOtp = async (email) => {
     await resendOtp(email);
+  };
+
+  // New function for handling the forgot password flow
+  const forgotPassword = async (email) => {
+    const res = await forgotPasswordService(email);
+    setUserEmail(res.email)// Later to reset email.
+    return res;
+  };
+
+  // New function for handling the reset password flow
+  const resetPassword = async (email, otp, newPassword) => {
+    await resetPasswordService(email, otp, newPassword);
   };
 
   return (
@@ -74,6 +88,8 @@ export const AuthProvider = ({ children }) => {
         register,
         checkOtp,
         resendVerificationOtp,
+        forgotPassword,
+        resetPassword, 
       }}
     >
       {children}

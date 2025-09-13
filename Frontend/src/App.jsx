@@ -10,7 +10,9 @@ import Admin from "./pages/Admin";
 import VerifyOTP from "./pages/VerifyOTP";
 import Home from "./pages/Home";
 import ForgotPassword from './pages/ForgotPassword'
+import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthContext";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -27,9 +29,11 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </AuthProvider>
   );
