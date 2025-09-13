@@ -23,10 +23,11 @@ const Assignments = ({ closeModal }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <h2 className="text-xl font-bold mb-2">Assign My Beds for Today</h2>
-      <input name="bedName" placeholder="Bed Name" className="border p-2 w-full rounded-md" onChange={handleChange} />
-      <input name="bedId" placeholder="Bed ID" className="border p-2 w-full rounded-md" onChange={handleChange} />
-      <input name="ward" placeholder="Ward Name" className="border p-2 w-full rounded-md" onChange={handleChange} />
-      <input name="department" placeholder="Department" className="border p-2 w-full rounded-md" onChange={handleChange} />
+      <input name="bedName" placeholder="Bed Name" type="text" className="border p-2 w-full rounded-md" onChange={handleChange} required />
+      <input name="bedId" placeholder="Bed ID" type="number" className="border p-2 w-full rounded-md" onChange={handleChange} required />
+      <input name="ward" placeholder="Ward Name" type="text" className="border p-2 w-full rounded-md" onChange={handleChange} required/>
+      <input name="department" placeholder="Department" type="text" className="border p-2 w-full rounded-md" onChange={handleChange} required />
+      <input name="date" placeholder="Expires at" type="date" className="border p-2 w-full rounded-md" onChange={handleChange} required />
       <button className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer">Save</button>
     </form>
   );
