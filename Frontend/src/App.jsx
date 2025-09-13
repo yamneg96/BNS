@@ -24,7 +24,7 @@ function App() {
       <AuthProvider>
         <div className="min-h-screen bg-gray-50">
           <Navbar />
-          <main className="text-center mt-6">
+          <main className="text-center">
             <Routes>
               <Route path="/" element={<Home />} /> 
               <Route path="/login" element={<Login />} />
