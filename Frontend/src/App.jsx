@@ -9,6 +9,7 @@ import Register from './pages/Register'
 import Admin from "./pages/Admin";
 import VerifyOTP from "./pages/VerifyOTP";
 import Home from "./pages/Home";
+import ForgotPassword from './pages/ForgotPassword'
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
             <Route path="/beds" element={<Beds />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </main>

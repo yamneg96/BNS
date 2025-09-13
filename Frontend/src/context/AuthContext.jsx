@@ -20,9 +20,8 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const profile = await getProfileService(token);
-          console.log(profile);
           setUser(profile);
-          setUserEmail(profile.email)
+          setUserEmail(profile.email);
         } catch (error) {
           console.error("Failed to fetch user profile:", error);
           setToken(null);

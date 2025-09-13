@@ -1,32 +1,12 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const { user } = useAuth;
+  const { user } = useAuth();
 
-  if (!user) {
+  if (user) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="text-center p-8 bg-white rounded-lg shadow-xl">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Welcome to the Dashboard!
-          </h2>
-          <p className="text-lg text-gray-600 mb-6">
-            Please log in to view this page.
-          </p>
-          <Link
-            to="/login"
-            className="inline-block px-6 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-md transition duration-300"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg">
         <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
@@ -84,6 +64,26 @@ const Dashboard = () => {
       </div>
     </div>
   );
+  } else{
+  return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="text-center p-8 bg-white rounded-lg shadow-xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Welcome to the Dashboard!
+          </h2>
+          <p className="text-lg text-gray-600 mb-6">
+            Please log in to view this page.
+          </p>
+          <Link
+            to="/login"
+            className="inline-block px-6 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-md transition duration-300"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+
+  );}
 };
 
 export default Dashboard;

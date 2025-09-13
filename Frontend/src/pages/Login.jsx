@@ -13,10 +13,11 @@ const Login = () => {
     e.preventDefault();
     try {
       setError("");
-      await login(email, password);
+      const res = await login(email, password);
       navigate("/dashboard");
     } catch (err) {
       setError(err);
+      console.log(err);
     }
   };
 
@@ -80,7 +81,7 @@ const Login = () => {
           <div className="flex items-center justify-between">
             <div className="text-sm">
               <a
-                href="#"
+                href="/forgot-password"
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
                 Forgot your password?

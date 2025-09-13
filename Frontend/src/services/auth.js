@@ -35,7 +35,7 @@ export const resendOtp = async (email) => {
 
 export const login = async (email, password) => {
   try {
-    const response = await API.post(`${API_URL}/login`, { email, password });
+    const response = await API.post(`/login`, { email, password });
     return response.data;
   } catch (error) {
     throw error.response.data.message;
