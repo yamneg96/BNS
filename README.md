@@ -1,7 +1,7 @@
-# 🏥 Bed Notification & Assignment System (Without HIS Integration)
+# 🏥 Bed Notification System (BNS) – Without HIS Integration
 
 A **MERN-stack web application** designed to provide **real-time bed notifications and dynamic assignments** in hospitals.  
-It helps **admins, nurses, residents, interns, and students** stay updated with **admission events** using **RBAC (role-based access control)**, push notifications, and audit logs.  
+It helps **C1 students, C2 students, interns, and admins** stay updated with **bed responsibilities and patient admission/withdrawal events** using **RBAC (role-based access control)**, in-app notifications, and a lightweight admin panel.  
 
 Unlike bulky HIS/EHR systems, this project is **lightweight, mobile-first, and easy to deploy**.
 
@@ -9,10 +9,12 @@ Unlike bulky HIS/EHR systems, this project is **lightweight, mobile-first, and e
 
 ## ✨ Features
 - 🔑 **User Authentication** (Register/Login with JWT)  
-- 🛡 **Role-Based Access Control (RBAC)** (Admin, Nurse, Resident, Intern, Student)  
-- 🛏 **Dynamic Bed Assignment** (claim or release beds in real time)  
-- 🔔 **Real-Time Notifications** (manual admission triggers → instant alerts)  
-- 📊 **Admin Dashboard** (audit logs, shift tracking, user management)  
+- 🛡 **Role-Based Access Control (RBAC)** (C1, C2, Intern, Admin)  
+- 🛏 **Bed Assignment** (users assign themselves to beds daily)  
+- 🔔 **Notification Panel** (Dept → Ward → Beds → Notify responsible person)  
+- ➕ **Patient Admitted / Patient Withdrawn** actions beside notifications  
+- 👤 **Profile Section** (“Hello [Name]” → profile with user info + bed assignments)  
+- 📊 **Admin Panel** (update actual beds, wards, available/rejected counts for all departments)  
 - 📱 **Mobile-First UI** with **TailwindCSS**  
 
 ---
@@ -22,13 +24,13 @@ Unlike bulky HIS/EHR systems, this project is **lightweight, mobile-first, and e
 - ⚡ [React + Vite](https://vitejs.dev/)  
 - 🎨 [Tailwind CSS](https://tailwindcss.com/)  
 - 🌐 Axios for API calls  
-- 🔔 Service Worker (for future web push notifications)  
+- 🔔 Service Worker (future push notifications)  
 
 ### Backend
 - 🟢 [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)  
 - 🍃 [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/)  
-- 🔑 JWT + bcrypt for authentication & security  
-- 📡 REST API with role-based access  
+- 🔑 JWT + bcrypt for authentication & RBAC  
+- 📡 REST API for communication  
 
 ---
 
@@ -47,35 +49,44 @@ bed-notification-system/
 │── frontend/               # React + Vite + Tailwind
 │   ├── src/
 │   │   ├── assets/         # Images, icons
-│   │   ├── components/     # Navbar, Sidebar, etc.
-│   │   ├── pages/          # Login, Dashboard, etc.
-│   │   ├── context/        # AuthContext, NotificationContext
-│   │   └── services/       # Axios API calls
+│   │   ├── components/     # Navbar, Cards, Modal, etc.
+│   │   ├── pages/          # Home, Dashboard, Assignments, Notifications, Profile, Admin
+│   │   ├── context/        # AuthContext
+│   │   └── services/       # Axios API calls (auth, beds, notifications, admin)
 │
 └── README.md
-```
+````
+
 ---
 
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the repository
 
-```
+```bash
 git clone https://github.com/yamneg96/bed-notification-system.git
 cd bed-notification-system
 ```
 
 ### 2️⃣ Backend Setup
 
-```
+```bash
 cd backend
 npm install
 ```
 
+Create a `.env` file:
+
+```env
+MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/bns
+JWT_SECRET=supersecretkey
+PORT=5000
+```
+
 Run backend:
 
-```
-npm run server
+```bash
+npm run dev
 ```
 
 ### 3️⃣ Frontend Setup
@@ -92,10 +103,25 @@ npm run dev
 
 ### Auth Routes
 
-* `POST /api/auth/register` → Register user (with role)
+* `POST /api/auth/register` → Register user (role: C1, C2, Intern, Admin)
 * `POST /api/auth/login` → Login user & return JWT
 * `GET /api/auth/profile` → Get current user (protected)
-* `GET /api/auth/all` → Get all users (admin only)
+
+### Bed Routes
+
+* `POST /api/beds/assign` → Assign beds for the logged-in user
+* `GET /api/beds/my` → Get logged-in user’s bed assignments
+
+### Notification Routes
+
+* `GET /api/notifications` → Get notifications
+* `POST /api/notifications/admit/:bedId` → Admit patient to a bed
+* `POST /api/notifications/withdraw/:bedId` → Withdraw patient from a bed
+
+### Admin Routes
+
+* `GET /api/admin/stats` → Get system-wide stats (beds, wards, available, rejected)
+* `POST /api/admin/update` → Update system-wide data
 
 ---
 
@@ -103,24 +129,20 @@ npm run dev
 
 Use **Postman** or **curl** to test API endpoints. Example:
 
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
--H "Content-Type: application/json" \
--d '{"name":"Alice","email":"alice@example.com","password":"123456","role":"nurse"}'
-```
-
 ---
 
 ## 📌 Roadmap
 
-* ✅ Authentication + RBAC
+* ✅ Authentication + RBAC (C1, C2, Intern, Admin)
 * ✅ Bed assignment & notifications
+* ✅ Patient admitted/withdrawn actions
 * ⬜ Push notification service worker
 * ⬜ Shift expiry automation
-* ⬜ Admin dashboards & analytics
+* ⬜ Advanced analytics dashboards
 
 ---
 
 ## 📜 License
 
 MIT License © 2025.
+Developed for real-time hospital communication efficiency.
