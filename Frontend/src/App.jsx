@@ -16,6 +16,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ResetPassword from "./pages/ResetPassword";
 import Assignments from "./pages/Assignments"; 
 import Profile from "./pages/Profile";           
+import Payments from "./pages/Payments";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
       <AuthProvider>
         <div className="min-h-screen bg-gray-50">
           <Navbar />
-          <main className="text-center">
+          <main className="min-h-screen text-center">
             <Routes>
               <Route path="/" element={<Home />} /> 
               <Route path="/login" element={<Login />} />
@@ -38,6 +39,7 @@ function App() {
               <Route path="/admin" element={<Admin />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/payment/success" element={<Payments />} />
               <Route path="*" element={<Home />} /> {/* fallback */}
             </Routes>
           </main>

@@ -78,3 +78,37 @@ export const paymentCallback = async (req, res) => {
     res.status(500).json({ message: "Payment processing failed" });
   }
 };
+
+export const verifyPayment = async (req, res) => {
+  const { tx_ref } = req.params;
+
+  try {
+    // Call Chapa verify API
+    const response = await axios.get(
+      `https://api.chapa.co/v1/transaction/verify/${tx_ref}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
+        },
+      }
+    );
+
+    const data = response.data;
+
+    if (data.status === "success" && data.data.status === "success") {
+      // Find user by tx_ref and update subscription
+      const user = await User.findOne({ "subscription.tx_ref": tx_ref });
+      if (user) {
+        user.subscription.isActive = true;
+        user.subscription.paidAt = new Date();
+        await user.save();
+      }
+      return res.json({ success: true, message: "Payment verified" });
+    }
+
+    return res.json({ success: false, message: "Payment not verified" });
+  } catch (err) {
+    console.error("Payment verify error:", err.response?.data || err.message);
+    res.status(500).json({ message: "Payment verification failed" });
+  }
+};

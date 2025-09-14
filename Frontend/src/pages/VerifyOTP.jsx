@@ -9,12 +9,7 @@ const VerifyOTP = () => {
   const [timer, setTimer] = useState(60);
   const location = useLocation();
   const navigate = useNavigate();
-  const { checkOtp, resendVerificationOtp, userEmail } = useAuth();
-
-  useEffect(() => {
-    console.log(userEmail);
-    console.log(location);
-  })
+  const { checkOtp, resendVerificationOtp, userEmail, initiateUserPayment } = useAuth();
 
   useEffect(() => {
     if (!userEmail) {
@@ -40,10 +35,13 @@ const VerifyOTP = () => {
       setError("");
       setMessage("Verifying OTP...");
       await checkOtp(userEmail, otp);
-      setMessage("Account verified successfully! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 3000);
+      setMessage("Account verified! Redirecting to payment...");
+      // initiate payment instead of going to login
+      setTimeout(() => {
+        initiateUserPayment(userEmail);
+      }, 1500);
     } catch (err) {
-      setError(err);
+      setError(err.message || "OTP verification failed");
       setMessage("");
     }
   };

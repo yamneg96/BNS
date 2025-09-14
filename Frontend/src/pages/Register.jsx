@@ -24,8 +24,7 @@ const Register = () => {
     try {
       setError("");
       setMessage("Registering...");
-      const response = await register(name, email, password, role);
-      console.log(response);
+      const response = await register(name, email, password, role, subscriptionPlan);
       setMessage(response.message);
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
@@ -152,7 +151,6 @@ const Register = () => {
                     <option value="c1">C1</option>
                     <option value="c2">C2</option>
                     <option value="intern">Intern</option>
-                    <option value="admin">Admin</option>
                   </select>
                 </div>
 

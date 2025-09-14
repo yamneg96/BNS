@@ -1,14 +1,14 @@
 import API from "./axios";
 
-export const register = async (name, email, password, role) => {
+export const register = async (name, email, password, role, plan) => {
   try {
-    const response = await API.post(`/register`, {
+    const response = await API.post(`/auth/register`, {
       name,
       email,
       password,
       role,
+      plan,
     });
-    console.log(response);
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -17,7 +17,7 @@ export const register = async (name, email, password, role) => {
 
 export const verifyOtp = async (email, otp) => {
   try {
-    const response = await API.post(`/verify-otp`, { email, otp });
+    const response = await API.post(`/auth/verify-otp`, { email, otp });
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -26,7 +26,7 @@ export const verifyOtp = async (email, otp) => {
 
 export const resendOtp = async (email) => {
   try {
-    const response = await API.post(`/resend-otp`, { email });
+    const response = await API.post(`/auth/resend-otp`, { email });
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -35,7 +35,7 @@ export const resendOtp = async (email) => {
 
 export const login = async (email, password) => {
   try {
-    const response = await API.post(`/login`, { email, password });
+    const response = await API.post(`/auth/login`, { email, password });
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -49,7 +49,7 @@ export const getProfile = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await API.get(`/profile`, config);
+    const response = await API.get(`/auth/profile`, config);
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -63,7 +63,7 @@ export const getAllUsers = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await API.get(`/all`, config);
+    const response = await API.get(`/auth/all`, config);
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -72,7 +72,7 @@ export const getAllUsers = async (token) => {
 
 export const forgotPassword = async (email) => {
   try {
-    const response = await API.post(`/forgot-password`, { email });
+    const response = await API.post(`/auth/forgot-password`, { email });
     return response.data;
   } catch (error) {
     throw error.response.data.message;
@@ -81,7 +81,7 @@ export const forgotPassword = async (email) => {
 
 export const resetPassword = async (email, otp, newPassword) => {
   try {
-    const response = await API.post(`/reset-password`, {
+    const response = await API.post(`/auth/reset-password`, {
       email,
       otp,
       newPassword,

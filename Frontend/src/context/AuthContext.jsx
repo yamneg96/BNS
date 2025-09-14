@@ -8,6 +8,7 @@ import {
   forgotPassword as forgotPasswordService,
   resetPassword as resetPasswordService,
 } from "../services/auth";
+import { initiatePayment } from '../services/payment';
 
 const AuthContext = createContext();
 
@@ -49,9 +50,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const register = async (name, email, password, role) => {
-    const regData = await registerService(name, email, password, role);
-    console.log(regData);
+  const register = async (name, email, password, role, plan) => {
+    const regData = await registerService(name, email, password, role, plan);
     setUserEmail(email);//Later to register email.
     return regData;
   };
@@ -76,6 +76,14 @@ export const AuthProvider = ({ children }) => {
     await resetPasswordService(email, otp, newPassword);
   };
 
+  //Subscription
+  const initiateUserPayment = async (email) => {
+  const response = await initiatePayment(email);
+  if (response.checkout_url) {
+    window.location.href = response.checkout_url; // redirect user to Chapa
+  }
+};
+
   return (
     <AuthContext.Provider
       value={{
@@ -89,7 +97,8 @@ export const AuthProvider = ({ children }) => {
         checkOtp,
         resendVerificationOtp,
         forgotPassword,
-        resetPassword, 
+        resetPassword,
+        initiateUserPayment, 
       }}
     >
       {children}
