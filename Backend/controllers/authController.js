@@ -181,7 +181,11 @@ export const getProfile = async (req, res) => {
       email: user.email,
       role: user.role,
       subscription: user.subscription,
+      id: user._id,
+      isAccountVerified: user.isAccountVerified,
+      
     });
+   
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
