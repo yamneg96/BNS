@@ -14,7 +14,10 @@ const userSchema = new mongoose.Schema(
       plan: { type: String, enum: ["monthly", "yearly"], default: "monthly" },
       isActive: { type: Boolean, default: false },
       startDate: { type: Date },
-      endDate: { type: Date }
+      endDate: { type: Date },
+      amountPaid: { type: Number }, // amount paid in ETB
+      tx_ref: { type: String },     // transaction reference from Chapa
+      paidAt: { type: Date },       // payment timestamp
     },
     verifyOtp: {
         type: String,
