@@ -174,5 +174,15 @@ export const loginUser = async (req, res) => {
 
 // Profile (protected)
 export const getProfile = async (req, res) => {
-  res.json(req.user);
+  try {
+    const user = req.user; // populated by `protect` middleware
+    res.json({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      subscription: user.subscription,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
