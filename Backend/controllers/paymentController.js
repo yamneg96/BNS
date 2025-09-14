@@ -46,23 +46,30 @@ export const initiatePayment = async (req, res) => {
 
 // Webhook callback (Chapa notifies after payment)
 export const paymentCallback = async (req, res) => {
-  const { status, tx_ref, email } = req.body; // check Chapa docs for exact payload
+  const { status, tx_ref, email } = req.body; // Chapa sends email and status
 
   try {
-    if (status === "success") {
-      const user = await User.findOne({ email });
-      if (user) {
-        const now = new Date();
-        const endDate =
-          user.subscription.plan === "monthly"
-            ? new Date(now.setMonth(now.getMonth() + 1))
-            : new Date(now.setFullYear(now.getFullYear() + 1));
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-        user.subscription.isActive = true;
-        user.subscription.startDate = new Date();
-        user.subscription.endDate = endDate;
-        await user.save();
-      }
+    // Only activate subscription if payment is successful
+    if (status === "success") {
+      const now = new Date();
+      const endDate =
+        user.subscription.plan === "monthly"
+          ? new Date(now.setMonth(now.getMonth() + 1))
+          : new Date(now.setFullYear(now.getFullYear() + 1));
+
+      const amount = user.subscription.plan === "monthly" ? 100 : 1000; // fixed backend amount
+
+      user.subscription.isActive = true;
+      user.subscription.startDate = new Date();
+      user.subscription.endDate = endDate;
+      user.subscription.amountPaid = amount;
+      user.subscription.tx_ref = tx_ref;
+      user.subscription.paidAt = new Date();
+
+      await user.save();
     }
 
     res.json({ message: "Payment processed" });
