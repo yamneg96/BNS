@@ -10,7 +10,7 @@ const generateToken = (id, role) => {
 
 // Register
 export const registerUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, plan } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
@@ -20,26 +20,30 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const otp = generateOtp();
-    const otpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const otpExpire = Date.now() + 10 * 60 * 1000;
 
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       role,
+      subscription: {
+        plan,          // store plan but inactive
+        isActive: false,
+      },
       verifyOtp: otp,
       verifyOtpExpireAt: otpExpire,
     });
 
-    // send OTP email
     await sendEmail(email, "Verify Your Account", `Your OTP is: ${otp}`);
 
     res.status(201).json({ email, message: "User registered. Please check your email for OTP." });
   } catch (err) {
-    console.error("Registration error: ", err)
+    console.error("Registration error: ", err);
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // Verify OTP
 export const verifyUserOtp = async (req, res) => {
