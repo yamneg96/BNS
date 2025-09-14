@@ -27,7 +27,7 @@ export const initiatePayment = async (req, res) => {
         first_name: user.name,
         tx_ref: `tx-${Date.now()}`,
         callback_url: `${process.env.BACKEND_URL}/api/payment/callback`, // backend callback
-        return_url: `${process.env.FRONTEND_URL}/payment/success`, // frontend success page
+        return_url: `${process.env.FRONTEND_URL}/payment/success?tx_ref=tx-${Date.now()}`, // frontend success page
       },
       {
         headers: {
