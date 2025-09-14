@@ -43,3 +43,31 @@ export const initiatePayment = async (req, res) => {
     res.status(500).json({ message: "Payment initiation failed" });
   }
 };
+
+// Webhook callback (Chapa notifies after payment)
+export const paymentCallback = async (req, res) => {
+  const { status, tx_ref, email } = req.body; // check Chapa docs for exact payload
+
+  try {
+    if (status === "success") {
+      const user = await User.findOne({ email });
+      if (user) {
+        const now = new Date();
+        const endDate =
+          user.subscription.plan === "monthly"
+            ? new Date(now.setMonth(now.getMonth() + 1))
+            : new Date(now.setFullYear(now.getFullYear() + 1));
+
+        user.subscription.isActive = true;
+        user.subscription.startDate = new Date();
+        user.subscription.endDate = endDate;
+        await user.save();
+      }
+    }
+
+    res.json({ message: "Payment processed" });
+  } catch (err) {
+    console.error("Payment callback error: ", err.message);
+    res.status(500).json({ message: "Payment processing failed" });
+  }
+};
