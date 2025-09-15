@@ -157,6 +157,9 @@ export const loginUser = async (req, res) => {
     if (!user.isAccountVerified)
       return res.status(401).json({ message: "Please verify your email first" });
 
+    if (!user.subscription.isActive)
+      return res.status(401).json({ message: "Please pay your due amount first" });    
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 

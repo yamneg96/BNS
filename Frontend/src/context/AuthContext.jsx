@@ -78,11 +78,16 @@ export const AuthProvider = ({ children }) => {
 
   //Subscription
   const initiateUserPayment = async (email) => {
-  const response = await initiatePayment(email);
-  if (response.checkout_url) {
-    window.location.href = response.checkout_url; // redirect user to Chapa
-  }
-};
+  const res = await initiatePayment(email);
+    try {
+      if (res.checkout_url) {
+        window.location.href = res.checkout_url; // redirect user to Chapa
+      }
+    } catch (error) {
+      console.error("Payment initiation error: ", error.message);
+      throw error;
+    }
+  };
 
   return (
     <AuthContext.Provider

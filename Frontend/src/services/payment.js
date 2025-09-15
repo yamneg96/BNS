@@ -22,3 +22,17 @@ export const verifyPayment = async (tx_ref) => {
     throw new Error(err.response?.data?.message || "Payment verification failed");
   }
 };
+
+export const triggerPaymentCallback = async ({ tx_ref, status, email }) => {
+  try {
+    const res = await API.post("/payment/callback", {
+      tx_ref,
+      status,
+      email,
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Payment callback failed:", err.response?.data || err.message);
+    throw new Error(err.response?.data?.message || "Payment callback failed");
+  }
+};
