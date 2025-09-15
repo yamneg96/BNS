@@ -14,11 +14,37 @@ export const registerUser = async (req, res) => {
 
   try {
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: "User already exists" });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Special case: constant admin (no OTP verification)
+    if (email === "Selamawitilahun07@gmail.com") {
+      const user = await User.create({
+        name: name || "Admin", // default name if not provided
+        email,
+        password: hashedPassword,
+        role: "admin", // force admin role
+        subscription: {
+          plan: plan || "yearly", // give default or passed plan
+          isActive: true, // directly active
+        },
+        isAccountVerified: true, 
+        verifyOtp: null,
+        verifyOtpExpireAt: null,
+      });
+
+      return res.status(201).json({
+        email: user.email,
+        role: user.role,
+        message: "Admin account created successfully (no verification required).",
+      });
+    }
+
+    // Normal user registration (with OTP)
     const otp = generateOtp();
     const otpExpire = Date.now() + 10 * 60 * 1000;
 
@@ -37,12 +63,16 @@ export const registerUser = async (req, res) => {
 
     await sendEmail(email, "Verify Your Account", `Your OTP is: ${otp}`);
 
-    res.status(201).json({ email, message: "User registered. Please check your email for OTP." });
+    res.status(201).json({
+      email,
+      message: "User registered. Please check your email for OTP.",
+    });
   } catch (err) {
     console.error("Registration error: ", err);
     res.status(500).json({ message: err.message });
   }
 };
+
 
 
 // Verify OTP
