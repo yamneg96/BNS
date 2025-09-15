@@ -4,7 +4,10 @@ import User from "../models/User.js";
 // Get all departments
 export const getDepartments = async (req, res) => {
   try {
-    const departments = await Department.find();
+    const departments = await Department.find().populate({
+      path: "wards.beds.assignedUser", //  populate nested reference
+      select: "name email role",       // only bring what you need
+    });
     res.json(departments);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -50,6 +53,31 @@ export const admitPatient = async (req, res) => {
     await department.save();
 
     res.json({ message: "Patient admitted", department });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Discharge patient
+export const dischargePatient = async (req, res) => {
+  try {
+    const { deptId, wardName, bedId } = req.body;
+
+    const department = await Department.findById(deptId);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+
+    const ward = department.wards.find(w => w.name === wardName);
+    if (!ward) return res.status(404).json({ message: "Ward not found" });
+
+    const bed = ward.beds.find(b => b.id === bedId);
+    if (!bed) return res.status(404).json({ message: "Bed not found" });
+
+    bed.status = "available";
+    bed.assignedUser = null; // 👈 clear user
+
+    await department.save();
+
+    res.json({ message: "Patient discharged", department });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
