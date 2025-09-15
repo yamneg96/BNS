@@ -1,25 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useAssignment } from "../context/AssignmentContext";
 import { Link } from "react-router-dom";
 import Modal from "../components/Modal";
-import Assignments from './Assignments'
+import Assignments from "./Assignments";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { activeAssignments, loading } = useAssignment;
 
-  const [open, setOpen] = useState(true);//Userኡን ግዴታ እንዲሞላ ለማድረግ።
+  // modal open state
+  const [open, setOpen] = useState(true);
+  const [forceRequired, setForceRequired] = useState(false);
 
-  if (user) {
+  // Force modal if user has no active assignments
+  useEffect(() => {
+    if (!loading && user) {
+      if (activeAssignments?.length === 0) {
+        setOpen(true);
+        setForceRequired(true);
+      }
+    }
+  }, [loading, user, activeAssignments]);
+
+  if (!user) {
     return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="text-center p-8 bg-white rounded-lg shadow-xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Welcome to the Dashboard!
+          </h2>
+          <p className="text-lg text-gray-600 mb-6">
+            Please log in to view this page.
+          </p>
+          <Link
+            to="/login"
+            className="inline-block px-6 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-md transition duration-300"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto p-6 rounded-xl">
         <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
           Welcome to the Bed Assignment Dashboard, {user.name}!
         </h1>
         <p className="text-lg text-gray-600 mb-6">
-          Your role: <span className="font-bold text-indigo-600">{user.role}</span>
+          Your role:{" "}
+          <span className="font-bold text-indigo-600">{user.role}</span>
         </p>
 
+        {/* Admin section */}
         {user.role === "admin" && (
           <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
             <h2 className="text-2xl font-bold text-blue-800 mb-4">
@@ -37,6 +73,7 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* Quick actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
           <div className="p-6 bg-green-50 rounded-lg border border-green-200">
             <h2 className="text-2xl font-bold text-green-800 mb-2">Beds</h2>
@@ -66,42 +103,20 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      {/*  */}
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-        <button
-          onClick={() => setOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          My Beds for Today
-        </button>
 
-        <Modal isOpen={open} onClose={() => setOpen(false)}>
-          <Assignments closeModal={() => setOpen(false)} />
-        </Modal>
-      </div>
+      {/* Modal */}
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        forceRequired={forceRequired}
+      >
+        <Assignments closeModal={() => {
+          setOpen(false);
+          setForceRequired(false);
+        }} />
+      </Modal>
     </div>
   );
-  } else{
-  return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="text-center p-8 bg-white rounded-lg shadow-xl">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Welcome to the Dashboard!
-          </h2>
-          <p className="text-lg text-gray-600 mb-6">
-            Please log in to view this page.
-          </p>
-          <Link
-            to="/login"
-            className="inline-block px-6 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-md transition duration-300"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-
-  );}
 };
 
 export default Dashboard;

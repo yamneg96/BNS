@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
+import assignmentRoutes from './routes/assignmentRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -20,6 +21,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/api/assignments", assignmentRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

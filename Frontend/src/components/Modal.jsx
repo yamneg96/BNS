@@ -1,12 +1,20 @@
 import React from "react";
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, forceRequired = false }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-xs">
-      <div className="bg-white rounded-lg p-6 w-96 relative shadow-lg">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer">✖</button>
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-xs z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg">
+        {/* ❌ close button (only show if not forceRequired) */}
+        {!forceRequired && (
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer"
+          >
+            ✖
+          </button>
+        )}
         {children}
       </div>
     </div>

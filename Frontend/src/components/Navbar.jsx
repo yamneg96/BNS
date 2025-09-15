@@ -77,7 +77,7 @@ const Navbar = () => {
         <div className="md:hidden mt-4 space-y-2 font-medium">
           {user && user.subscription.isActive ? (
             <>
-              <span className="block px-4 py-2 text-sm text-gray-300">
+              <span className={`block px-4 py-2 text-sm text-gray-300 ${user.subscription.isActive === true ? 'text-green-500' : 'text-red-500'}`}>
                 Hello, {user.name} ({user.role})
               </span>
               {user.role === "admin" && (

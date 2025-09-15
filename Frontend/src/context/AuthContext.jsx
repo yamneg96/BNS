@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const profile = await getProfileService(token);
           setUser(profile);
+          console.log(profile);
           setUserEmail(profile.email);
         } catch (error) {
           console.error("Failed to fetch user profile:", error);
