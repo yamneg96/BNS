@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import NotificationCard from "../components/NotificationCard";
-import { getNotifications, admitPatient, withdrawPatient } from "../services/notificationService";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
