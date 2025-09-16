@@ -37,7 +37,6 @@ export const BedProvider = ({ children }) => {
   const admit = async (deptId, wardName, bedId) => {
     try {
       const res = await admitPatient({ deptId, wardName, bedId });
-
       // if backend returns a notification message
       if (res.notifyUser) {
         toast.success(res.message); 
@@ -76,6 +75,7 @@ export const BedProvider = ({ children }) => {
         loading,
         admit,
         discharge,
+        loadDepartments,
       }}
     >
       {children}

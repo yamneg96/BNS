@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createAssignment } from "../services/assignment";
 import { useAssignment } from "../context/AssignmentContext";
 import { useAuth } from "../context/AuthContext";
-import { getDepartments } from "../services/department"; 
+import { getDepartments } from "../services/department";
 import { toast } from "react-hot-toast";
+import { useBed } from "../context/BedContext";
 
 const Assignments = ({ closeModal }) => {
   const { user } = useAuth();
   const { fetchActive } = useAssignment();
+  const { loadDepartments } = useBed();
 
   const [departments, setDepartments] = useState([]);
   const [form, setForm] = useState({
@@ -18,7 +20,7 @@ const Assignments = ({ closeModal }) => {
     wardExpiry: "",
   });
 
-  // Load departments from backend
+  // Load departments
   useEffect(() => {
     getDepartments().then(setDepartments).catch(console.error);
   }, []);
@@ -43,11 +45,23 @@ const Assignments = ({ closeModal }) => {
     try {
       await createAssignment(form);
       toast.success("Assignment saved!");
+      loadDepartments();
       await fetchActive();
+
+      // --- Mark first login done ---
+      if (!user.firstLoginDone) {
+        await fetch(`/api/users/markFirstLoginDone`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        });
+      }
+
       closeModal();
     } catch (err) {
       console.error(err);
-      console.log(err.response.data);
       toast.error("Failed to save assignment");
     }
   };
@@ -55,7 +69,6 @@ const Assignments = ({ closeModal }) => {
   const selectedDept = departments.find((d) => d._id === form.deptId);
   const selectedWard = selectedDept?.wards.find((w) => w.name === form.wardName);
 
-  // Validation: enable save only if all required fields are filled
   const isFormValid =
     form.deptId &&
     form.deptExpiry &&
@@ -80,7 +93,7 @@ const Assignments = ({ closeModal }) => {
                 checked={form.deptId === dept._id}
                 onChange={handleDeptChange}
                 required
-                className="text-center border-1 border-indigo-500"
+                className="border-1 border-indigo-500"
               />{" "}
               {dept.name}
             </label>
@@ -155,7 +168,7 @@ const Assignments = ({ closeModal }) => {
           </div>
         )}
 
-        {/* Save button disabled until form valid */}
+        {/* Save button */}
         <button
           type="submit"
           disabled={!isFormValid}
