@@ -6,6 +6,8 @@ import {
   deleteUser,
   getAllAssignments,
   getAllDepartments,
+  getStats,
+  updateData,
 } from "../controllers/adminController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
@@ -21,5 +23,8 @@ router.delete("/users/:id", deleteUser);
 
 router.get("/assignments", getAllAssignments);
 router.get("/departments", getAllDepartments);
+
+router.get("/stats", getStats);
+router.post("/update", updateData);
 
 export default router;
