@@ -76,3 +76,49 @@ export const getAllDepartments = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Get system statistics
+export const getStats = async (req, res) => {
+  try {
+    // total users
+    const totalUsers = await User.countDocuments();
+
+    // count users by role
+    const rolesCount = await User.aggregate([
+      { $group: { _id: "$role", count: { $sum: 1 } } },
+    ]);
+
+    // total departments
+    const totalDepartments = await Department.countDocuments();
+
+    // count occupied vs available beds
+    const departments = await Department.find();
+    let totalBeds = 0;
+    let occupiedBeds = 0;
+    let availableBeds = 0;
+
+    departments.forEach((dept) => {
+      dept.wards.forEach((ward) => {
+        ward.beds.forEach((bed) => {
+          totalBeds++;
+          if (bed.status === "occupied") occupiedBeds++;
+          else availableBeds++;
+        });
+      });
+    });
+
+    res.json({
+      totalUsers,
+      rolesCount,
+      totalDepartments,
+      beds: {
+        total: totalBeds,
+        occupied: occupiedBeds,
+        available: availableBeds,
+      },
+    });
+  } catch (error) {
+    console.error("getStats error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
