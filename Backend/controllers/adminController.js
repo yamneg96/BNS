@@ -54,3 +54,25 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// get all assignments with user and department details
+export const getAllAssignments = async (req, res) => {
+  try {
+    const assignments = await Assignment.find()
+      .populate("user", "name email role")
+      .populate("department", "name");
+    res.json(assignments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// get all departments
+export const getAllDepartments = async (req, res) => {
+  try {
+    const departments = await Department.find();
+    res.json(departments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
