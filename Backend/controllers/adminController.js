@@ -122,3 +122,34 @@ export const getStats = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Update data based on type (user role or department details)
+export const updateData = async (req, res) => {
+  try {
+    const { type, payload } = req.body;
+
+    if (type === "userRole") {
+      const { userId, newRole } = payload;
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      user.role = newRole;
+      await user.save();
+      return res.json({ message: "User role updated successfully", user });
+    }
+
+    if (type === "department") {
+      const { deptId, updateFields } = payload;
+      const dept = await Department.findByIdAndUpdate(deptId, updateFields, {
+        new: true,
+      });
+      if (!dept) return res.status(404).json({ message: "Department not found" });
+      return res.json({ message: "Department updated successfully", dept });
+    }
+
+    return res.status(400).json({ message: "Invalid update type" });
+  } catch (error) {
+    console.error("updateData error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
