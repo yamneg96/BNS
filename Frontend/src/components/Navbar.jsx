@@ -8,10 +8,15 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [profMenu, setProfMenu] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const profileMenu = () => {
+    setProfMenu(!profMenu);
+  }
 
   const handleLogout = () => {
     setIsMenuOpen(false);
@@ -77,9 +82,20 @@ const Navbar = () => {
         <div className="md:hidden mt-4 space-y-2 font-medium">
           {user && user.subscription.isActive ? (
             <>
+              {profMenu ? (
+                <div className="flex flex-col space-y-2">
+                  <span className={`block px-4 py-2 text-sm text-gray-300 ${user.subscription.isActive === true ? 'text-green-500' : 'text-red-500'}`}>
+                    <img src={user?.image} alt="Profile Image"/> Hello, {user.name} ({user.role})
+                  </span> 
+                  <div>
+
+                  </div>
+                </div>
+              ) : (
               <span className={`block px-4 py-2 text-sm text-gray-300 ${user.subscription.isActive === true ? 'text-green-500' : 'text-red-500'}`}>
-                Hello, {user.name} ({user.role})
-              </span>
+                <img src={user?.image} alt="Profile Image"/> Hello, {user.name} ({user.role})
+              </span> 
+              )}
               {user.role === "admin" && (
                 <Link
                   to="/all-users"
