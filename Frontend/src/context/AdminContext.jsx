@@ -47,7 +47,6 @@ export const AdminProvider = ({ children }) => {
     try {
       const data = await getAllAssignments();
       setAssignments(data);
-      console.log(data);
     } catch (err) {
       toast.error("Failed to load assignments");
     }
