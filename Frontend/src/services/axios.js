@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://bns-ao5j.vercel.app/api' || 'http://localhost:5000/api',
-  withCredentials: true, // keep this if you plan to use cookies
+  baseURL: 'https://bns-ao5j.vercel.app/api', // Vercel backend
+  withCredentials: true,
 });
 
-// Attach token automatically to every request
+// Attach token automatically
 API.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem('token'); // or sessionStorage
+    const token = sessionStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
