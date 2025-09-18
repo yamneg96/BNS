@@ -11,7 +11,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
         <div className="flex justify-end space-x-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            className="cp px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
           >
             Cancel
           </button>
@@ -20,7 +20,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
               onConfirm();
               onCancel();
             }}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            className="cp px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
           >
             Confirm
           </button>
