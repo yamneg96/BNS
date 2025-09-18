@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useAssignment } from "../context/AssignmentContext";
 import { Link } from "react-router-dom";
@@ -7,21 +7,38 @@ import Assignments from "./Assignments";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { activeAssignments, loading } = useAssignment;
 
-  // modal open state
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [forceRequired, setForceRequired] = useState(false);
 
-  // Force modal if user has no active assignments
+  const { expiry, deptExpiry, wardExpiry, loading, fetchExpiry } = useAssignment();
+
+  const hasExpiredAssignment = useMemo(() => {
+    if (!expiry) return false;
+    const today = new Date().toLocaleDateString('en-CA');
+    const deptExpired = deptExpiry && today >= deptExpiry;
+    const wardExpired = wardExpiry && today >= wardExpiry;
+    return deptExpired || wardExpired;
+  }, [expiry]);
+  
   useEffect(() => {
     if (!loading && user) {
-      if (activeAssignments?.length === 0) {
+      const isFirstLogin = !user.firstLoginDone; // only once ever
+      if (isFirstLogin || hasExpiredAssignment) {
         setOpen(true);
         setForceRequired(true);
+      } else {
+        setForceRequired(false);
       }
     }
-  }, [loading, user, activeAssignments]);
+  }, [loading, user, hasExpiredAssignment]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (user) fetchExpiry();
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user, fetchExpiry]);
 
   if (!user) {
     return (
@@ -110,10 +127,7 @@ const Dashboard = () => {
         onClose={() => setOpen(false)}
         forceRequired={forceRequired}
       >
-        <Assignments closeModal={() => {
-          setOpen(false);
-          setForceRequired(false);
-        }} />
+        <Assignments closeModal={() => setOpen(false)} />
       </Modal>
     </div>
   );

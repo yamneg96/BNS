@@ -14,16 +14,15 @@ export const BedProvider = ({ children }) => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch on mount
+  // Fetch on logged in user.
   useEffect(() => {
     loadDepartments();
-  }, []);
+  }, [user]);
 
   const loadDepartments = async () => {
     try {
       setLoading(true);
       const data = await fetchDepartments();
-      console.log(data);
       setDepartments(data);
     } catch (err) {
       console.error("Failed to fetch departments", err);

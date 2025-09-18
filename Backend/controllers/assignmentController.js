@@ -10,6 +10,7 @@ import Assignment from "../models/Assignment.js";
  * - Mark beds as occupied and assignedUser = userId
  * - Save Department and create Assignment doc
  */
+
 export const createAssignment = async (req, res) => {
   try {
     const {
@@ -21,7 +22,8 @@ export const createAssignment = async (req, res) => {
       note,
     } = req.body;
 
-    const user = req.user; // from JWT
+    const userFromToken = req.user; // from JWT (may be plain object with id/_id)
+    const userId = userFromToken?._id || userFromToken?.id;
 
     // Basic validations
     if (!deptId || !wardName || !Array.isArray(bedIds) || bedIds.length === 0) {
@@ -34,41 +36,49 @@ export const createAssignment = async (req, res) => {
     const ward = department.wards.find(w => w.name === wardName);
     if (!ward) return res.status(404).json({ message: "Ward not found" });
 
-    // Check bed existence & availability
-    const unavailableBeds = [];
+    // Validate that each bedId exists in the ward (BUT do NOT reject occupied beds)
     for (const bedId of bedIds) {
-      const bed = ward.beds.find(b => b.id === bedId);
-      if (!bed) return res.status(404).json({ message: `Bed ${bedId} not found in ward ${wardName}` });
-      if (bed.status === "occupied") unavailableBeds.push(bedId);
-    }
-    if (unavailableBeds.length) {
-      return res.status(400).json({ message: `Beds already occupied: ${unavailableBeds.join(", ")}` });
+      const bed = ward.beds.find(b => String(b.id) === String(bedId));
+      if (!bed) {
+        return res.status(404).json({ message: `Bed ${bedId} not found in ward ${wardName}` });
+      }
+      // Note: we intentionally do NOT check bed.status === "occupied" here,
+      // because doctors/users should be able to be assigned regardless.
     }
 
-    // ✅ Mark beds as occupied and assign to this user
+    // Assign beds to this user (set assignedUser). We intentionally do NOT change bed.status.
     for (const bedId of bedIds) {
-      const bed = ward.beds.find(b => b.id === bedId);
-      bed.status = "occupied";
-      bed.assignedUser = user._id;
+      const bed = ward.beds.find(b => String(b.id) === String(bedId));
+      bed.assignedUser = userId;
     }
 
+    // Save the updated department (with assignedUser changes)
     await department.save();
 
-    // ✅ Create Assignment doc
+    // Create Assignment doc
     const assignment = new Assignment({
-      user: user._id,                  // logged-in user only
+      user: userId,
       department: department._id,
       ward: ward.name,
       beds: bedIds,
-      deptExpiry: new Date(deptExpiry),
-      wardExpiry: new Date(wardExpiry),
+      deptExpiry: deptExpiry ? new Date(deptExpiry) : null,
+      wardExpiry: wardExpiry ? new Date(wardExpiry) : null,
       note: note || "",
-      createdBy: user._id,
+      createdBy: userId,
     });
 
     await assignment.save();
 
-    return res.json({ message: "Assignment created", assignment });
+    // Mark firstLoginDone on the real user document (only if not already true)
+    const userDoc = await User.findById(userId);
+    if (userDoc && !userDoc.firstLoginDone) {
+      userDoc.firstLoginDone = true;
+      await userDoc.save();
+    }
+
+    // Return assignment and updated user to frontend (so frontend can refresh context)
+    const updatedUser = await User.findById(userId).select("-password");
+    return res.json({ message: "Assignment created", assignment, user: updatedUser });
   } catch (err) {
     console.error("createAssignment error:", err);
     return res.status(500).json({ message: err.message || "Server error" });
@@ -77,76 +87,26 @@ export const createAssignment = async (req, res) => {
 
 
 /**
- * Get assignments for a user
+ * Get latest assignment expiry dates for the logged-in user
  */
-export const getAssignmentsForUser = async (req, res) => {
+export const getAssignmentExpiryForUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const assignments = await Assignment.find({ user: userId })
-      .populate("department", "name")
-      .populate("user", "name email role")
-      .sort({ createdAt: -1 });
+    const userId = req.user._id; // from JWT/protect middleware
 
-    return res.json(assignments);
-  } catch (err) {
-    console.error("getAssignmentsForUser error:", err);
-    return res.status(500).json({ message: err.message || "Server error" });
-  }
-};
+    const latestAssignment = await Assignment.findOne({ user: userId })
+      .sort({ createdAt: -1 }) // latest one
+      .select("deptExpiry wardExpiry"); // only return expiry fields
 
-/**
- * Get active assignment(s) for a user (deptExpiry or wardExpiry in future)
- */
-export const getActiveAssignmentsForUser = async (req, res) => {
-  try {
-    const userId = req.user._id; // from protect middleware
-    const now = new Date();
-
-    const assignments = await Assignment.find({
-      user: userId,
-      $or: [
-        { deptExpiry: { $gte: now } },
-        { wardExpiry: { $gte: now } }
-      ]
-    }).populate("department", "name");
-
-    return res.json(assignments);
-  } catch (err) {
-    console.error("getActiveAssignmentsForUser error:", err);
-    return res.status(500).json({ message: err.message || "Server error" });
-  }
-};
-
-/**
- * Delete assignment (optional) and free beds
- */
-export const deleteAssignment = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const assignment = await Assignment.findById(id);
-    if (!assignment) return res.status(404).json({ message: "Assignment not found" });
-
-    // find department and free up beds
-    const department = await Department.findById(assignment.department);
-    if (department) {
-      const ward = department.wards.find(w => w.name === assignment.ward);
-      if (ward) {
-        for (const bedId of assignment.beds) {
-          const bed = ward.beds.find(b => b.id === bedId);
-          if (bed) {
-            bed.status = "available";
-            bed.assignedUser = null;
-          }
-        }
-        await department.save();
-      }
+    if (!latestAssignment) {
+      return res.json(null); // no assignments yet
     }
 
-    await assignment.remove();
-
-    return res.json({ message: "Assignment deleted and beds freed" });
+    return res.json({
+      deptExpiry: latestAssignment.deptExpiry,
+      wardExpiry: latestAssignment.wardExpiry,
+    });
   } catch (err) {
-    console.error("deleteAssignment error:", err);
+    console.error("getAssignmentExpiryForUser error:", err);
     return res.status(500).json({ message: err.message || "Server error" });
   }
 };

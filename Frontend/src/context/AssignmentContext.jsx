@@ -1,32 +1,46 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import { getActiveAssignmentsForUser } from "../services/assignment";
+import { getAssignmentExpiryForUser } from "../services/assignment";
 
 const AssignmentContext = createContext();
 
 export const AssignmentProvider = ({ children }) => {
   const { user } = useAuth();
-  const [activeAssignments, setActiveAssignments] = useState([]);
+  const [deptExpiry, setDeptExpiry] = useState(null);
+  const [wardExpiry, setWardExpiry] = useState(null);
+  const [expiry, setExpiry] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchActive = async () => {
+  const fetchExpiry = async () => {
     if (!user) return;
     try {
-      const data = await getActiveAssignmentsForUser(user._id);
-      setActiveAssignments(data);
+      const data = await getAssignmentExpiryForUser(user._id);
+      setExpiry(data);
+
+      if (data) {
+        const formattedDeptExpiry = data.deptExpiry ? new Date(data.deptExpiry).toISOString().split('T')[0] : null;
+        const formattedWardExpiry = data.wardExpiry ? new Date(data.wardExpiry).toLocaleDateString('en-CA') : null;
+
+        setDeptExpiry(formattedDeptExpiry);
+        setWardExpiry(formattedWardExpiry);
+
+        console.log(data);
+        console.log('Department expiry date: ', formattedDeptExpiry);
+        console.log('Ward expiry date: ', formattedWardExpiry);
+      }
     } catch (err) {
-      console.error("Error fetching assignments", err);
+      console.error("Error fetching assignment expiry", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchActive();
+    fetchExpiry();
   }, [user]);
 
   return (
-    <AssignmentContext.Provider value={{ activeAssignments, fetchActive, loading }}>
+    <AssignmentContext.Provider value={{ expiry, deptExpiry, wardExpiry, fetchExpiry, loading }}>
       {children}
     </AssignmentContext.Provider>
   );

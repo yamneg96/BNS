@@ -18,14 +18,16 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState();
 
+  const [firstTime, setFirstTime] = useState();
+
   useEffect(() => {
     const loadUser = async () => {
       if (token) {
         try {
           const profile = await getProfileService(token);
           setUser(profile);
-          console.log(profile);
           setUserEmail(profile.email);
+          setFirstTime(profile.firstLoginDone);
         } catch (error) {
           console.error("Failed to fetch user profile:", error);
           setToken(null);

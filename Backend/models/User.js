@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
       enum: ["admin", "c1", "c2", "intern"],
       default: "c1",
     },
+    firstLoginDone: { type: Boolean, default: false },
     subscription: {
       plan: { type: String, enum: ["monthly", "yearly"], default: "monthly" },
       isActive: { type: Boolean, default: false },

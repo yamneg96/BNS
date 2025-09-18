@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createAssignment } from "../services/assignment";
-import { useAssignment } from "../context/AssignmentContext";
-import { useAuth } from "../context/AuthContext";
 import { getDepartments } from "../services/department";
 import { toast } from "react-hot-toast";
 import { useBed } from "../context/BedContext";
 
 const Assignments = ({ closeModal }) => {
-  const { user } = useAuth();
-  const { fetchActive } = useAssignment();
   const { loadDepartments } = useBed();
 
   const [departments, setDepartments] = useState([]);
@@ -44,20 +40,9 @@ const Assignments = ({ closeModal }) => {
     e.preventDefault();
     try {
       await createAssignment(form);
+
       toast.success("Assignment saved!");
       loadDepartments();
-      await fetchActive();
-
-      // --- Mark first login done ---
-      if (!user.firstLoginDone) {
-        await fetch(`/api/users/markFirstLoginDone`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        });
-      }
 
       closeModal();
     } catch (err) {
