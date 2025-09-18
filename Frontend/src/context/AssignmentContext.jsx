@@ -23,10 +23,6 @@ export const AssignmentProvider = ({ children }) => {
 
         setDeptExpiry(formattedDeptExpiry);
         setWardExpiry(formattedWardExpiry);
-
-        console.log(data);
-        console.log('Department expiry date: ', formattedDeptExpiry);
-        console.log('Ward expiry date: ', formattedWardExpiry);
       }
     } catch (err) {
       console.error("Error fetching assignment expiry", err);

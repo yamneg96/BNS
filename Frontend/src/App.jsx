@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import { AuthProvider } from "./context/AuthContext";
 import { BedProvider } from "./context/BedContext"; 
 import { AssignmentProvider } from "./context/AssignmentContext";
+import { AdminProvider } from "./context/AdminContext"; 
 import ResetPassword from "./pages/ResetPassword";
 import Assignments from "./pages/Assignments"; 
 import Profile from "./pages/Profile";           
@@ -27,28 +28,30 @@ function App() {
       <AuthProvider>
         <BedProvider>
           <AssignmentProvider>
-            <div className="min-h-screen bg-gray-50">
-              <Navbar />
-              <main className="min-h-screen text-center">
-                <Routes>
-                  <Route path="/" element={<Home />} /> 
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/verify-otp" element={<VerifyOTP />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/beds" element={<Beds />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/assignments" element={<Assignments />} /> 
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/payment/success" element={<Payments />} />
-                  <Route path="*" element={<Home />} /> {/* fallback */}
-                </Routes>
-              </main>
-              <Footer />
-            </div>
+            <AdminProvider>
+              <div className="min-h-screen bg-gray-50">
+                <Navbar />
+                <main className="min-h-screen text-center">
+                  <Routes>
+                    <Route path="/" element={<Home />} /> 
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/verify-otp" element={<VerifyOTP />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/beds" element={<Beds />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/assignments" element={<Assignments />} /> 
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/payment/success" element={<Payments />} />
+                    <Route path="*" element={<Home />} /> {/* fallback */}
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
+            </AdminProvider>
           </AssignmentProvider>
         </BedProvider>
       </AuthProvider>
