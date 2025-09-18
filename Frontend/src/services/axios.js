@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://bednotificationsystem.onrender.com/api' || 'http://localhost:5000/api',
+  baseURL: 'https://bednotificationsystem.onrender.com/api',
   withCredentials: true, // keep this if you plan to use cookies
 });
 
