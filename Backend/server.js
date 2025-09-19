@@ -14,23 +14,24 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+
 const allowedOrigins = [
-  'https://bns-beta.vercel.app',
-  'http://localhost:5173', // for local testing
+  "http://localhost:5173",          // local dev
+  "https://bns-beta.vercel.app",   // your deployed frontend
 ];
 
-// Use CORS middleware
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // allow Postman or server-to-server
-    if (allowedOrigins.indexOf(origin) === -1) {
-      console.error(`CORS Error: Origin ${origin} not allowed`);
-      return callback(new Error('CORS policy does not allow access from this origin'), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // Routes
 app.use("/api/auth", authRoutes);
