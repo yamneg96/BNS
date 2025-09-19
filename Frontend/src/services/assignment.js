@@ -12,3 +12,8 @@ export const getAssignmentExpiryForUser = async (userId) => {
   return res.data; // { deptExpiry, wardExpiry } or null
 };
 
+export const updateAssignment = async (id, data) => {
+  const res = await API.put(`/assignments/${id}`, data);
+  return res.data;
+};
+

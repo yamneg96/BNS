@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { createAssignment } from "../services/assignment";
+import { createAssignment, updateAssignment } from "../services/assignment";
 import { getDepartments } from "../services/department";
 import { toast } from "react-hot-toast";
 import { useBed } from "../context/BedContext";
+import { useAuth } from "../context/AuthContext";
 
-const Assignments = ({ closeModal }) => {
+const Assignments = ({ closeModal, updateAssign = false }) => {
   const { loadDepartments } = useBed();
+  const { user } = useAuth();
 
   const [departments, setDepartments] = useState([]);
   const [form, setForm] = useState({
@@ -15,6 +17,7 @@ const Assignments = ({ closeModal }) => {
     deptExpiry: "",
     wardExpiry: "",
   });
+  const [loading, setLoading] = useState(false);
 
   // Load departments
   useEffect(() => {
@@ -38,16 +41,22 @@ const Assignments = ({ closeModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await createAssignment(form);
-
-      toast.success("Assignment saved!");
+      if (updateAssign) {
+        await updateAssignment(user._id, form);
+        toast.success("Assignment updated successfully!");
+      } else {
+        await createAssignment(form);
+        toast.success("Assignment saved!");
+      }
       loadDepartments();
-
       closeModal();
     } catch (err) {
       console.error(err);
       toast.error("Failed to save assignment");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,7 +73,9 @@ const Assignments = ({ closeModal }) => {
   return (
     <div className="max-h-[500px] overflow-auto p-4">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-xl font-bold mb-2">Insert your assigned beds</h2>
+        <h2 className="text-xl font-bold mb-2">
+          {updateAssign ? "Update your assignments" : "Insert your assigned beds"}
+        </h2>
 
         {/* Department radio */}
         <div>
@@ -156,14 +167,18 @@ const Assignments = ({ closeModal }) => {
         {/* Save button */}
         <button
           type="submit"
-          disabled={!isFormValid}
+          disabled={!isFormValid || loading}
           className={`px-4 py-2 rounded w-full ${
             isFormValid
               ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
               : "bg-gray-300 text-gray-600 cursor-not-allowed"
           }`}
         >
-          Save Assignment
+          {loading
+            ? "Saving..."
+            : updateAssign
+            ? "Update Assignment"
+            : "Save Assignment"}
         </button>
       </form>
     </div>

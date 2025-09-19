@@ -4,12 +4,14 @@ import { useAssignment } from "../context/AssignmentContext";
 import { Link } from "react-router-dom";
 import Modal from "../components/Modal";
 import Assignments from "./Assignments";
+import { Menu } from "lucide-react";
 
 const Dashboard = () => {
   const { user } = useAuth();
 
   const [open, setOpen] = useState(false);
   const [forceRequired, setForceRequired] = useState(false);
+  const [updateAssign, setUpdateAssign]= useState(false);
 
   const { expiry, deptExpiry, wardExpiry, loading, fetchExpiry } = useAssignment();
 
@@ -121,13 +123,25 @@ const Dashboard = () => {
         </div>
       </div>
 
+      <button
+        onClick={() => {
+          setOpen(true)
+          setUpdateAssign(!updateAssign)}}
+        className="cursor-pointer fixed bottom-4 left-4 z-50 p-3 bg-indigo-600 text-white rounded-full shadow-lg lg:hidden"
+      >
+         <Menu size={24} /> {/*Update Assignments */}
+      </button>
+
       {/* Modal */}
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
         forceRequired={forceRequired}
+        updateAssign={updateAssign}
       >
-        <Assignments closeModal={() => setOpen(false)} />
+        <Assignments 
+        updateAssign={updateAssign}
+        closeModal={() => setOpen(false)} />
       </Modal>
     </div>
   );
