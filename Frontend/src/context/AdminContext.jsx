@@ -26,9 +26,8 @@ export const AdminProvider = ({ children }) => {
   }, []);
 
   const handleError = (err) => {
-    // Check if the error is related to authentication
     if (err.response && err.response.status === 401) {
-      return; // Ignore authentication errors
+      return;
     }
     console.log("An error occurred:", err);
   };
