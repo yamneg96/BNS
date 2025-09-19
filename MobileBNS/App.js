@@ -1,20 +1,50 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-export default function App() {
+import { AuthProvider } from './src/context/AuthContext';
+import { BedProvider } from './src/context/BedContext';
+import { AssignmentProvider } from './src/context/AssignmentContext';
+import { AdminProvider } from './src/context/AdminContext';
+
+import AuthNavigator from './src/navigation/AuthNavigator';
+import MainNavigator from './src/navigation/MainNavigator';
+import { useAuth } from './src/context/AuthContext';
+
+const Stack = createStackNavigator();
+
+function AppContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return null; // You can add a loading screen here
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      {user && user.subscription?.isActive ? (
+        <MainNavigator />
+      ) : (
+        <AuthNavigator />
+      )}
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <BedProvider>
+        <AssignmentProvider>
+          <AdminProvider>
+            <AppContent />
+            <StatusBar style="auto" />
+            <Toast />
+          </AdminProvider>
+        </AssignmentProvider>
+      </BedProvider>
+    </AuthProvider>
+  );
+}
