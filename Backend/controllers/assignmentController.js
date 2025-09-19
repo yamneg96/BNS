@@ -112,6 +112,53 @@ export const getAssignmentExpiryForUser = async (req, res) => {
 };
 
 
+// Get logged-in user's assignments
+export const getMyAssignments = async (req, res) => {
+  try {
+    const userId = req.user._id; // from auth middleware
+
+    // populate department details
+    const assignments = await Assignment.find({ user: userId })
+      .populate("department", "name wards")
+      .populate("createdBy", "name email role");
+
+    if (!assignments.length) {
+      return res.status(404).json({ message: "No assignments found" });
+    }
+
+    // format response with dept, ward, and bed details
+    const formattedAssignments = assignments.map((a) => {
+      const dept = a.department;
+
+      // find the ward
+      const ward = dept.wards.find((w) => w.name === a.ward);
+
+      // get bed objects for the assigned bed ids
+      const assignedBeds = ward
+        ? ward.beds.filter((b) => a.beds.includes(b.id))
+        : [];
+
+      return {
+        _id: a._id,
+        department: dept.name,
+        ward: a.ward,
+        beds: assignedBeds,
+        deptExpiry: a.deptExpiry,
+        wardExpiry: a.wardExpiry,
+        note: a.note,
+        createdBy: a.createdBy,
+        createdAt: a.createdAt,
+      };
+    });
+
+    res.json(formattedAssignments);
+  } catch (error) {
+    console.error("getMyAssignments error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 // Update assignment (change ward/bed selection, expiry, note, etc.)
 export const updateAssignment = async (req, res) => {
   try {
