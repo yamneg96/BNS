@@ -11,6 +11,9 @@ import {
   deleteDepartment,
   deleteWard,
   deleteBed,
+  addDepartment,
+  addWard,
+  addBed,
 } from "../controllers/adminController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
@@ -29,6 +32,12 @@ router.get("/departments", getAllDepartments);
 
 router.get("/stats", getStats);
 router.post("/update", updateData);
+
+// Create endpoints
+router.post("/departments", addDepartment);
+router.post("/departments/:deptId/wards", addWard);
+router.post("/departments/:deptId/wards/:wardId/beds", addBed);
+
 
 router.delete("/departments/:deptId", deleteDepartment);
 router.delete("/departments/:deptId/wards/:wardId", deleteWard);
