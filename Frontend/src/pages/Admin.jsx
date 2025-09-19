@@ -4,6 +4,7 @@ import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../context/AuthContext";
 import GoBack from '../components/GoBack'; // <-- Added GoBack component
 import { Users, Hospital, Stethoscope, Bed } from 'lucide-react';
+import { useEffect } from "react";
 
 const Admin = () => {
   const {
@@ -16,9 +17,14 @@ const Admin = () => {
     addBed,
     removeBed,
     assignments,
+    loadDepartments
   } = useAdmin();
 
   const { user } = useAuth();
+
+  useEffect(() => {
+    loadDepartments();
+  }, [user])
 
   const [tab, setTab] = useState("departments");
   const [selectedDept, setSelectedDept] = useState(null);

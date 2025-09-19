@@ -28,12 +28,12 @@ const Navbar = () => {
     <nav className="p-4 bg-gray-800 text-white shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo and Title */}
-        <div className="flex items-center space-x-2">
-          <img src={bedIcon} alt="Bed Icon" className="h-8" />
-          <Link to="/" className="text-xl font-bold font-inter">
-            BNS
-          </Link>
-        </div>
+        <Link to="/" className="text-xl font-bold font-inter">
+          <div className="flex items-center space-x-2">
+            <img src={bedIcon} alt="Bed Icon" className="h-8" />
+            <p>BNS</p>
+          </div>
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-4 font-medium">

@@ -17,14 +17,6 @@ export const AdminProvider = ({ children }) => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load initial data
-  useEffect(() => {
-    loadStats();
-    loadUsers();
-    loadAssignments();
-    loadDepartments();
-  }, []);
-
   const handleError = (err) => {
     if (err.response && err.response.status === 401) {
       return;
@@ -161,6 +153,9 @@ export const AdminProvider = ({ children }) => {
         departments,
         loading,
         loadDepartments,
+        loadStats,
+        loadUsers,
+        loadAssignments,
         addWard,
         removeWard,
         addBed,
