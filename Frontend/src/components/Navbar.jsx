@@ -43,7 +43,7 @@ const Navbar = () => {
                 Hello, {user.name} ({user.role})
               </span>
               {user.role === "admin" && (
-                <Link to="/all-users" className="hover:text-blue-400">
+                <Link to="/admin" className="hover:text-blue-400">
                   Users
                 </Link>
               )}
@@ -98,7 +98,7 @@ const Navbar = () => {
               )}
               {user.role === "admin" && (
                 <Link
-                  to="/all-users"
+                  to="/admin"
                   onClick={toggleMenu}
                   className="block px-4 py-2 hover:bg-gray-700 transition duration-200"
                 >
