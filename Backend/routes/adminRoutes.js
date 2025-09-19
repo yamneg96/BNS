@@ -8,6 +8,9 @@ import {
   getAllDepartments,
   getStats,
   updateData,
+  deleteDepartment,
+  deleteWard,
+  deleteBed,
 } from "../controllers/adminController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
@@ -26,5 +29,9 @@ router.get("/departments", getAllDepartments);
 
 router.get("/stats", getStats);
 router.post("/update", updateData);
+
+router.delete("/departments/:deptId", deleteDepartment);
+router.delete("/departments/:deptId/wards/:wardId", deleteWard);
+router.delete("/departments/:deptId/wards/:wardId/beds/:bedId", deleteBed);
 
 export default router;

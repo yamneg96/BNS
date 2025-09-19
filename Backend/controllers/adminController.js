@@ -153,3 +153,70 @@ export const updateData = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Delete a department
+export const deleteDepartment = async (req, res) => {
+  try {
+    const { deptId } = req.params;
+    const department = await Department.findByIdAndDelete(deptId);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+
+    res.json({ message: "Department deleted successfully" });
+  } catch (error) {
+    console.error("deleteDepartment error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete a ward from a department
+export const deleteWard = async (req, res) => {
+  try {
+    const { deptId, wardId } = req.params;
+
+    const department = await Department.findById(deptId);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+
+    // find ward index
+    const wardIndex = department.wards.findIndex(
+      (ward) => ward._id.toString() === wardId
+    );
+    if (wardIndex === -1) return res.status(404).json({ message: "Ward not found" });
+
+    // remove ward
+    department.wards.splice(wardIndex, 1);
+    await department.save();
+
+    res.json({ message: "Ward deleted successfully", department });
+  } catch (error) {
+    console.error("deleteWard error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+// Delete a bed from a ward
+export const deleteBed = async (req, res) => {
+  try {
+    const { deptId, wardId, bedId } = req.params;
+
+    const department = await Department.findById(deptId);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+
+    const ward = department.wards.id(wardId);
+    if (!ward) return res.status(404).json({ message: "Ward not found" });
+
+    const bedIndex = ward.beds.findIndex(
+      (bed) => bed._id.toString() === bedId
+    );
+    if (bedIndex === -1) return res.status(404).json({ message: "Bed not found" });
+
+    // remove bed
+    ward.beds.splice(bedIndex, 1);
+    await department.save();
+
+    res.json({ message: "Bed deleted successfully", ward });
+  } catch (error) {
+    console.error("deleteBed error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
