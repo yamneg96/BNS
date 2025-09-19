@@ -7,6 +7,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
 import assignmentRoutes from './routes/assignmentRoutes.js';
 import adminRoutes from "./routes/adminRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js"
 
 dotenv.config();
 connectDB();
@@ -36,6 +37,7 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes)
 
 app.get("/", (req, res) => {
   res.send("API is running...");

@@ -1,31 +1,54 @@
 import React, { useEffect, useState } from "react";
 import NotificationCard from "../components/NotificationCard";
+import GoBack from "../components/GoBack";
+import { Bell } from "lucide-react";
+import { getNotifications } from "../services/notification";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const data = await getNotifications();
-      setNotifications(data);
+      try {
+        const data = await getNotifications();
+        setNotifications(data);
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+      }
     })();
   }, []);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Notifications</h2>
+    <div className="p-8 max-w-4xl mx-auto min-h-screen bg-gray-50">
+      <GoBack />
+      <div className="flex items-center space-x-4 mb-8">
+        <Bell size={40} className="text-yellow-500" />
+        <h1 className="text-4xl font-extrabold text-gray-900">Notifications</h1>
+      </div>
+
       {notifications.length === 0 ? (
-        <p>No notifications available.</p>
+        <div className="bg-white shadow-xl rounded-xl p-10 text-center flex flex-col items-center">
+          <Bell size={64} className="text-gray-300 mb-4" />
+          <p className="text-xl text-gray-600 font-semibold">
+            No new notifications at this time.
+          </p>
+          <p className="text-sm text-gray-400 mt-2">You're all caught up!</p>
+        </div>
       ) : (
-        notifications.map((n) => (
-          <NotificationCard
-            key={n._id}
-            bed={n.bed}
-            assignedUser={n.assignedUser}
-            onAdmit={() => admitPatient(n.bed.id)}
-            onWithdraw={() => withdrawPatient(n.bed.id)}
-          />
-        ))
+        <div className="space-y-6">
+          {notifications.map((n) => (
+            <NotificationCard
+              key={n._id}
+              bed={n.bedId}
+              wardName={n.wardName}
+              departmentName={n.departmentName}
+              message={n.message}
+              type={n.type}
+              createdAt={n.createdAt}
+              from={n.from} 
+            />
+          ))}
+        </div>
       )}
     </div>
   );

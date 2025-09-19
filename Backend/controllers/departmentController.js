@@ -1,6 +1,7 @@
 import Department from "../models/Department.js";
 import User from "../models/User.js";
 import { sendEmail } from "../utils/email.js";
+import Notification from "../models/Notification.js";
 
 // Get all departments
 export const getDepartments = async (req, res) => {
@@ -64,6 +65,15 @@ export const admitPatient = async (req, res) => {
       "Patient Admission Notification",
       `A patient was admitted to Bed ${bed.id}, Ward ${ward.name}, Department ${department.name}.`
     );
+    await Notification.create({
+      user: assignedUser._id,
+      from: req.user._id,
+      type: "admit",
+      bedId: bed.id,
+      wardName: ward.name,
+      departmentName: department.name,
+      message: `A patient was admitted to Bed ${bed.id}, Ward ${ward.name}, Department ${department.name}.`,
+    });
 
     return res.json({ message: `Patient admitted. Notification sent to ${assignedUser.email}` });
   } catch (error) {
@@ -110,6 +120,15 @@ export const dischargePatient = async (req, res) => {
       "Patient Discharge Notification",
       `Your patient was discharged from Bed ${bed.id}, Ward ${ward.name}, Department ${department.name}.`
     );
+    await Notification.create({
+      user: assignedUser._id,
+      from: req.user._id,
+      type: "discharge",
+      bedId: bed.id,
+      wardName: ward.name,
+      departmentName: department.name,
+      message: `Your patient was discharged from Bed ${bed.id}, Ward ${ward.name}, Department ${department.name}.`,
+    });
 
     return res.json({ message: `Patient discharged. Notification sent to ${assignedUser.email}` });
   } catch (error) {

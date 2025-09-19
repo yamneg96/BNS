@@ -25,12 +25,20 @@ export const AdminProvider = ({ children }) => {
     loadDepartments();
   }, []);
 
+  const handleError = (err) => {
+    // Check if the error is related to authentication
+    if (err.response && err.response.status === 401) {
+      return; // Ignore authentication errors
+    }
+    console.log("An error occurred:", err);
+  };
+
   const loadStats = async () => {
     try {
       const data = await getStats();
       setStats(data);
     } catch (err) {
-      toast.error("Failed to load stats");
+      handleError(err);
     }
   };
 
@@ -39,7 +47,7 @@ export const AdminProvider = ({ children }) => {
       const data = await getAllUsers();
       setUsers(data);
     } catch (err) {
-      toast.error("Failed to load users");
+      handleError(err);
     }
   };
 
@@ -48,7 +56,7 @@ export const AdminProvider = ({ children }) => {
       const data = await getAllAssignments();
       setAssignments(data);
     } catch (err) {
-      toast.error("Failed to load assignments");
+      handleError(err);
     }
   };
 
@@ -57,7 +65,7 @@ export const AdminProvider = ({ children }) => {
       const data = await getAllDepartments();
       setDepartments(data);
     } catch (err) {
-      toast.error("Failed to load departments");
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -79,7 +87,7 @@ export const AdminProvider = ({ children }) => {
       loadDepartments();
       return updated;
     } catch (err) {
-      toast.error("Failed to add ward");
+      handleError(err);
     }
   };
 
@@ -99,7 +107,7 @@ export const AdminProvider = ({ children }) => {
       loadDepartments();
       return updated;
     } catch (err) {
-      toast.error("Failed to remove ward");
+      handleError(err);
     }
   };
 
@@ -120,7 +128,7 @@ export const AdminProvider = ({ children }) => {
       loadDepartments();
       return updated;
     } catch (err) {
-      toast.error("Failed to add bed");
+      handleError(err);
     }
   };
 
@@ -141,7 +149,7 @@ export const AdminProvider = ({ children }) => {
       loadDepartments();
       return updated;
     } catch (err) {
-      toast.error("Failed to remove bed");
+      handleError(err);
     }
   };
 

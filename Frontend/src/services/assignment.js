@@ -17,3 +17,8 @@ export const updateAssignment = async (id, data) => {
   return res.data;
 };
 
+export const getMyAssignment = async() => {
+  const res = await API.get('/assignments/my');
+  return res.data;
+}
+

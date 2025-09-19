@@ -20,6 +20,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Assignments from "./pages/Assignments"; 
 import Profile from "./pages/Profile";           
 import Payments from "./pages/Payments";
+import MyAssignments from "./pages/MyAssignments";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                     <Route path="/beds" element={<Beds />} />
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/assignments" element={<Assignments />} /> 
+                    <Route path="/myassignments" element={<MyAssignments />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -15,7 +15,6 @@ export const initiatePayment = async (email) => {
 export const verifyPayment = async (tx_ref) => {
   try {
     const res = await API.get(`/payment/verify/${tx_ref}`);
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.error("Payment verification failed:", err.response?.data || err.message);

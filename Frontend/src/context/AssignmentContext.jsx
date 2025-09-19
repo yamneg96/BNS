@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import { getAssignmentExpiryForUser } from "../services/assignment";
+import { getAssignmentExpiryForUser, getMyAssignment } from "../services/assignment";
 
 const AssignmentContext = createContext();
 
@@ -10,6 +10,7 @@ export const AssignmentProvider = ({ children }) => {
   const [wardExpiry, setWardExpiry] = useState(null);
   const [expiry, setExpiry] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userAssign, setUserAssign] = useState();
 
   const fetchExpiry = async () => {
     if (!user) return;
@@ -31,12 +32,21 @@ export const AssignmentProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchExpiry();
-  }, [user]);
+  const getUserAssignment = async() => {
+    if(!user) return;
+    try{
+      const data = await getMyAssignment();
+      if(data){
+      setUserAssign(data[0])
+      console.log(data[0]);
+      }
+    } catch(err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <AssignmentContext.Provider value={{ expiry, deptExpiry, wardExpiry, fetchExpiry, loading }}>
+    <AssignmentContext.Provider value={{ expiry, deptExpiry, wardExpiry, fetchExpiry, loading, getUserAssignment, userAssign }}>
       {children}
     </AssignmentContext.Provider>
   );
