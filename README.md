@@ -136,9 +136,9 @@ Use **Postman** or **curl** to test API endpoints. Example:
 * ✅ Authentication + RBAC (C1, C2, Intern, Admin)
 * ✅ Bed assignment & notifications
 * ✅ Patient admitted/withdrawn actions
-* ⬜ Push notification service worker
-* ⬜ Shift expiry automation
-* ⬜ Advanced analytics dashboards
+* ✅ Push notification service worker
+* ✅ Shift expiry automation
+* ✅ Advanced analytics dashboards
 
 ---
 
