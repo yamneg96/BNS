@@ -2,6 +2,24 @@ import 'dotenv/config';
 import Department from "../models/Department.js";
 import User from "../models/User.js";
 import connectDB from "../config/db.js";
+import School from "../models/School.js";
+
+
+const schoolsTemplate = [
+  {
+    name: "Medicine School",
+    image: "/assets/homeImage.jpg",
+    description: "Comprehensive medical training, patient care, and research.",
+    departments: ["Internal Medicine", "GynObs", "Pediatrics", "Surgery", "Emergency", "Dermatology", "Psychiatry", "ENT", "Ophthalmology"],
+  },
+  {
+    name: "Lab School",
+    image: "/assets/hospitalHallway.jpg",
+    description: "Dedicated to clinical laboratory science and diagnostics.",
+    departments: ["Internal Medicine", "GynObs", "Pediatrics", "Surgery"],
+  },
+];
+
 
 const departmentsTemplate = [
   {
@@ -47,23 +65,38 @@ const generateBeds = async (users) => {
 const seedHospitalData = async () => {
   try {
     await connectDB();
-    const users = await User.find(); // get all users
+    const users = await User.find();
 
     await Department.deleteMany();
+    await School.deleteMany();
 
-    const departments = [];
-
+    // 1. Seed Departments
+    const departmentDocs = {}; // store refs by name
     for (const dept of departmentsTemplate) {
       const wards = [];
       for (const wardName of dept.wards) {
         const beds = await generateBeds(users);
         wards.push({ name: wardName, beds });
       }
-      departments.push({ name: dept.name, wards });
+      const createdDept = await Department.create({
+        name: dept.name,
+        wards,
+      });
+      departmentDocs[dept.name] = createdDept._id;
     }
 
-    await Department.insertMany(departments);
-    console.log("✅ Hospital data seeded");
+    // 2. Seed Schools with linked departments
+    for (const school of schoolsTemplate) {
+      const deptIds = school.departments.map((d) => departmentDocs[d]);
+      await School.create({
+        name: school.name,
+        image: school.image,
+        description: school.description,
+        departments: deptIds,
+      });
+    }
+
+    console.log("✅ Schools + Departments + Wards + Beds seeded");
     process.exit();
   } catch (err) {
     console.error(err);
