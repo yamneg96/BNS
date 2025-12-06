@@ -577,3 +577,34 @@ export const deleteAssignment = async (req, res) => {
     return res.status(500).json({ message: err.message || "Server error" });
   }
 };
+
+// ================== Send Global Notification to All Users ==================
+export const sendGlobalNotification = async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    if (!subject || !message) {
+      return res.status(400).json({ error: "Subject and message are required." });
+    }
+
+    // Fetch all users
+    const users = await User.find({}, "email"); // only get emails
+    if (!users || users.length === 0) {
+      return res.status(404).json({ error: "No users found to notify." });
+    }
+
+    // Send emails one by one (safe)
+    for (const user of users) {
+      await sendEmailToUser(user.email, subject, message);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Notification sent to all users successfully.",
+      totalRecipients: users.length,
+    });
+  } catch (error) {
+    console.error("❌ Error sending global notification:", error);
+    res.status(500).json({ error: "Failed to send notifications." });
+  }
+};
