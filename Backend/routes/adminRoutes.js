@@ -23,6 +23,7 @@ import {
   denyRoleChange,
   deleteAssignment,
   deleteAllUsers,
+  sendGlobalNotification,
 } from "../controllers/adminController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
@@ -55,6 +56,7 @@ router.put("/deny-role-change/:userId", denyRoleChange);
 router.post("/departments", addDepartment);
 router.post("/departments/:deptId/wards", addWard);
 router.post("/departments/:deptId/wards/:wardId/beds", addBed);
+router.post("/notify-all",  sendGlobalNotification);
 
 
 router.delete("/departments/:deptId", deleteDepartment);
