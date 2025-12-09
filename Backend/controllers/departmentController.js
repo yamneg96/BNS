@@ -48,9 +48,10 @@ export const admitPatient = async (req, res) => {
     }
 
     // If the clicking user is the assigned one → stop
-    if (bed.assignedUser.toString() === userId.toString()) {
+   if (String(bed.assignedUser) === String(userId)) {
       return res.status(400).json({ message: "You cannot notify yourself." });
-    }
+  }
+
 
     // Get assigned user details
     const assignedUser = await User.findById(bed.assignedUser);
