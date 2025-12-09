@@ -40,7 +40,7 @@ export const BedProvider = ({ children }) => {
     try {
       const res = await admitPatient({ deptId, wardName, bedId });
       // if backend returns a notification message
-      if (res.notifyUser) {
+      if (res) {
         toast.success(res.message); 
       } else {
         toast.success(res.message || "Admit handled");
@@ -49,6 +49,9 @@ export const BedProvider = ({ children }) => {
       loadDepartments();
       window.location.reload();
     } catch (err) {
+      if(res.bed.assignedUser === null ){
+        toast.error("No user assigned to this bed.")
+      }
       handleError(err)
     }
   };
@@ -58,7 +61,7 @@ export const BedProvider = ({ children }) => {
     try {
       const res = await dischargePatient({ deptId, wardName, bedId });
 
-      if (res.notifyUser) {
+      if (res) {
         toast.success(res.message);
       } else {
         toast.success(res.message || "Discharge handled");

@@ -44,7 +44,7 @@ export const admitPatient = async (req, res) => {
 
     // If no assigned user → stop
     if (!bed.assignedUser) {
-      return res.status(400).json({ message: "No user assigned to this bed. Can't send notification." });
+      return res.status(400).json({ bed, message: "No user assigned to this bed. Can't send notification." });
     }
 
     // If the clicking user is the assigned one → stop

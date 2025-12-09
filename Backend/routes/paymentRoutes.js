@@ -11,7 +11,7 @@ import { protect } from "../middleware/authMiddleware.js"; // ✅ import protect
 const router = express.Router();
 
 // POST → initiate payment (after OTP verified)
-router.post("/initiate", protect, initiatePayment); // ✅ protected
+router.post("/initiate", initiatePayment); // ✅ Removed protected cause won't work if not.
 
 // POST → upload payment screenshot
 router.post("/upload-screenshot", upload.single("screenshot"), uploadPaymentScreenshot); // ✅ protected

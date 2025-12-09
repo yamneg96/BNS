@@ -201,7 +201,7 @@ const Beds = () => {
                                 {/* Admit Button */}
                                 <button
                                   onClick={() => {
-                                    if (bed?.assignedUser?._id === user._id) {
+                                    if (bed?.assignedUser?._id === user.id) {
                                       toast.error("You cannot admit yourself.");
                                     } else {
                                       admit(currentDepartment._id, ward.name, bed.id);

@@ -10,7 +10,8 @@ const VerifyOTP = () => {
   const [timer, setTimer] = useState(60);
   const location = useLocation();
   const navigate = useNavigate();
-  const { checkOtp, resendVerificationOtp, userEmail, initiateUserPayment } = useAuth();
+  const { checkOtp, resendVerificationOtp, initiateUserPayment } = useAuth();
+  const userEmail = localStorage.getItem("email");
 
   useEffect(() => {
     if (!userEmail) {
@@ -40,13 +41,14 @@ const VerifyOTP = () => {
         toast.success("Redirecting to Login . . .", {duration: 2000});
         navigate("/login");
       } else{
-        setMessage("Account verified! Redirecting to payment...");
         // initiate payment instead of going to login
         setTimeout(() => {
-          // initiateUserPayment(userEmail);
-          navigate('/screenshot');
+          setMessage("Account verified! Redirecting to payment...");
+          // navigate('/screenshot');
         }, 2000);
-
+        await initiateUserPayment(userEmail);
+        localStorage.removeItem("email");
+        localStorage.removeItem("selectedPlan");
         // setMessage("Account verified! Redirecting to login...");
         // setTimeout(() => {
         //   navigate('/login');

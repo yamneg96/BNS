@@ -143,7 +143,7 @@ export const verifyPayment = async (req, res) => {
         user.subscription.paidAt = new Date();
         await user.save();
       }
-      return res.json({ success: true, message: "Payment verified" });
+      return res.json({ success: true, message: "Payment verified"});
     }
 
     return res.json({ success: false, message: "Payment not verified" });
