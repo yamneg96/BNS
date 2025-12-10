@@ -49,9 +49,7 @@ export const BedProvider = ({ children }) => {
       loadDepartments();
       window.location.reload();
     } catch (err) {
-      if(res.bed.assignedUser === null ){
         toast.error("No user assigned to this bed.")
-      }
       handleError(err)
     }
   };
