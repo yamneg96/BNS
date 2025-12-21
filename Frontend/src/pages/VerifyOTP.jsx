@@ -44,9 +44,9 @@ const VerifyOTP = () => {
         // initiate payment instead of going to login
         setTimeout(() => {
           setMessage("Account verified! Redirecting to payment...");
-          // navigate('/screenshot');
+          navigate('/screenshot');
         }, 2000);
-        await initiateUserPayment(userEmail);
+        // await initiateUserPayment(userEmail);
         localStorage.removeItem("email");
         localStorage.removeItem("selectedPlan");
         // setMessage("Account verified! Redirecting to login...");

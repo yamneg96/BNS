@@ -33,7 +33,7 @@ const Login = () => {
 
       if (user?.subscription?.isActive) {
         toast.success("Login Success! Redirecting to dashboard...");
-        navigate("/dashboard");
+        navigate("/universities");
       } else {
         toast.custom((t) => (
           <div
