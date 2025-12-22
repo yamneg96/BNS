@@ -30,6 +30,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Screenshot from "./pages/Screenshot";
 import AboutUs from "./pages/AboutUs";
 import Support from "./pages/Support";
+import SelectUniversity from "./pages/SelectUniversity";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
 
                     <Route path="/payment/success" element={<Payments />} />
                     
+                    <Route path="/universities" element={<SelectUniversity />} />
                     <Route path="/schools" element={<SelectSchool />} />
                     <Route path="/admin" element={<MainAdmin />} />
                     <Route path="/update-expiry" element={<UpdateExpiry />} />
