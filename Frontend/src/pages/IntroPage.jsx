@@ -1,105 +1,145 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import s1 from '../assets/slide2.png'
+import s2 from '../assets/slide3.png'
+import s3 from '../assets/slide1.png'
 
 const IntroPage = ({ onComplete }) => {
   const comp = useRef(null);
   const [step, setStep] = useState(0);
 
-  // Onboarding Data
   const slides = [
     {
       title: "BNS",
-      subtitle: "Bed Notification System",
-      desc: "Welcome! Let's get you familiar with the system.",
+      subtitle: "Smart Hospital Management",
+      desc: "Welcome! BNS helps you manage hospital flow with zero delay.",
+      image: s1
     },
     {
       title: "Real-Time",
-      subtitle: "Instant Updates",
-      desc: "Get notified the second a hospital bed becomes available.",
+      subtitle: "Instant Bed Tracking",
+      desc: "View available beds across all wards in real-time. No more manual checking.",
+      image: s2
     },
     {
-      title: "Efficient",
-      subtitle: "Seamless Management",
-      desc: "Assign patients and manage admissions with a single click.",
+      title: "Notifications",
+      subtitle: "Stay Informed",
+      desc: "Receive instant alerts when a patient is admitted or a bed is cleared.",
+      image: s3   
     },
   ];
 
-  // This function handles the final exit animation
   const handleExit = () => {
-    gsap.to("#intro-slider", {
+    const tl = gsap.timeline({ 
+      onComplete: () => {
+        // Mark as seen in localStorage before calling the final onComplete
+        localStorage.setItem('hasSeenBnsTour', 'true');
+        onComplete();
+      } 
+    });
+    
+    tl.to("#intro-slider", {
       xPercent: -100,
       duration: 1.1,
       ease: "expo.inOut",
-      onComplete: onComplete, // Tell Home.jsx to unmount this component
-    });
-    // Fade in the home content simultaneously
-    gsap.to("#welcome", {
+    })
+    .to("#welcome", {
       opacity: 1,
       duration: 1,
-      delay: 0.3
-    });
+    }, "-=0.8");
   };
 
-  const nextStep = () => {
-    if (step < slides.length - 1) {
-      // Animate text out, change state, animate text back in
-      gsap.to(".text-content", {
+  const changeSlide = (direction) => {
+    const nextStep = direction === "next" ? step + 1 : step - 1;
+
+    if (nextStep >= 0 && nextStep < slides.length) {
+      gsap.to(".content-wrapper", {
         opacity: 0,
-        y: -20,
+        x: direction === "next" ? -30 : 30,
         duration: 0.3,
         onComplete: () => {
-          setStep(step + 1);
-          gsap.to(".text-content", { opacity: 1, y: 0, duration: 0.5 });
+          setStep(nextStep);
+          gsap.fromTo(".content-wrapper", 
+            { opacity: 0, x: direction === "next" ? 30 : -30 },
+            { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
+          );
         },
       });
-    } else {
+    } else if (nextStep === slides.length) {
       handleExit();
     }
   };
 
   return (
-    <div ref={comp} className="fixed inset-0 z-[999] overflow-hidden">
-      <div
-        id="intro-slider"
-        className="h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-white relative"
-      >
+    <div ref={comp} className="fixed inset-0 z-[1000] overflow-hidden bg-slate-950">
+      <div id="intro-slider" className="h-screen w-full flex flex-col md:flex-row items-center justify-center p-6 md:p-12 relative">
+        
         {/* Skip Button */}
         <button 
           onClick={handleExit}
-          className="cp border-2 border-white px-4 py-2 rounded-full absolute top-10 right-10 text-slate-400 hover:text-white transition-colors uppercase tracking-widest text-sm"
+          className="cp absolute top-8 right-8 border-2 border-white px-5 py-2 rounded-full text-slate-400 hover:text-white hover:border-indigo-500 transition-all z-50 font-bold tracking-widest text-[10px]"
         >
-          Skip
+          SKIP TOUR
         </button>
 
-        <div className="text-center px-6 text-content">
-          <h1 className="text-6xl md:text-8xl font-black italic text-indigo-500 mb-2">
-            {slides[step].title}
-          </h1>
-          <h3 className="text-xl md:text-2xl font-light text-slate-400 tracking-widest uppercase mb-4">
-            {slides[step].subtitle}
-          </h3>
-          <p className="text-slate-500 max-w-sm mx-auto text-lg">
-            {slides[step].desc}
-          </p>
-        </div>
-
-        {/* Controls */}
-        <div className="mt-12 flex flex-col items-center gap-6">
-          <button
-            onClick={nextStep}
-            className="cp px-12 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-bold transition-all transform active:scale-95 shadow-lg shadow-indigo-500/20"
-          >
-            {step === slides.length - 1 ? "Get Started" : "Next"}
-          </button>
-
-          {/* Progress Dots */}
-          <div className="flex gap-2">
-            {slides.map((_, i) => (
-              <div 
-                key={i} 
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${step === i ? 'bg-indigo-500 w-6' : 'bg-slate-700'}`}
+        <div className="content-wrapper flex flex-col md:flex-row items-center gap-12 max-w-6xl w-full">
+          
+          {/* Left Side: Visual Preview */}
+          <div className="w-full md:w-1/2 flex justify-center max-md:mt-30">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+              <img 
+                src={slides[step].image} 
+                alt="App Preview" 
+                className="relative rounded-xl border border-slate-800 shadow-2xl w-full object-cover aspect-video"
               />
-            ))}
+            </div>
+          </div>
+
+          {/* Right Side: Text Content */}
+          <div className="w-full md:w-1/2 text-left space-y-6">
+            <div>
+              <h1 className="text-indigo-500 font-black text-5xl md:text-7xl italic mb-2">
+                {slides[step].title}
+              </h1>
+              <h3 className="text-white text-2xl md:text-3xl font-bold">
+                {slides[step].subtitle}
+              </h3>
+              <p className="text-slate-400 text-lg mt-4 leading-relaxed max-w-md">
+                {slides[step].desc}
+              </p>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center gap-4 pt-4">
+              {step > 0 && (
+                <button
+                  onClick={() => changeSlide("prev")}
+                  className="cp p-4 bg-slate-900 hover:bg-slate-800 text-white rounded-full transition-all border border-slate-800"
+                >
+                  <FaArrowLeft />
+                </button>
+              )}
+              
+              <button
+                onClick={() => changeSlide("next")}
+                className="cp px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-bold flex items-center gap-3 transition-all shadow-lg"
+              >
+                {step === slides.length - 1 ? "Get Started" : "Next Step"}
+                <FaArrowRight size={14} />
+              </button>
+            </div>
+
+            {/* Pagination Indicators */}
+            <div className="flex gap-2 pt-4">
+              {slides.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1 rounded-full transition-all duration-300 ${step === i ? 'w-8 bg-indigo-500' : 'w-2 bg-slate-800'}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
