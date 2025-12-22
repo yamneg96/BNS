@@ -56,7 +56,7 @@ const Register = () => {
   return (
     /* Changed h-screen to min-h-screen and removed overflow-hidden to allow Footer visibility */
     <div className="min-h-screen w-full bg-white font-sans">
-      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] w-full">
+      <div className="flex flex-col lg:flex-row h-screen w-full">
         
         {/* Left Side: Visual Branding */}
         <div className="hidden lg:relative lg:flex lg:w-5/12">
