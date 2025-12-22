@@ -6,7 +6,7 @@ import connectDB from "./config/db.js";
 // import { startSubscriptionExpiryJob } from "./cronJobs/subscriptionExpiryJob.js";
 
 
-// import authRoutes from "./routes/authRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 // import paymentRoutes from "./routes/paymentRoutes.js";
 // import departmentRoutes from "./routes/departmentRoutes.js";
 // import assignmentRoutes from './routes/assignmentRoutes.js';
@@ -46,7 +46,7 @@ app.use(
 );
 
 // Routes
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 // app.use("/api/payment", paymentRoutes);
 // app.use("/api/departments", departmentRoutes);
 // app.use("/api/assignments", assignmentRoutes);
