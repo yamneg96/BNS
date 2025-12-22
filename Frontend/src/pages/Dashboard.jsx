@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [today, setToday] = useState();
   const navigate = useNavigate();
+  const university = localStorage.getItem('university') // This later used to filter what we show on the dashboard.
 
   // 🔹 Handle first-time login modal
   useEffect(() => {

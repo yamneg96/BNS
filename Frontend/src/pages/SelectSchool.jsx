@@ -14,6 +14,7 @@ const SelectSchool = () => {
     const { user } = useAuth();
 
     const handleSchoolSelect = (school) => {
+        localStorage.setItem("university", school?.name);
         toast.success(`You have selected ${school.name}`);
         setIsOpen(false);
         navigate('/dashboard');
@@ -44,7 +45,7 @@ const SelectSchool = () => {
                             school={school}
                             onClick={() => openConfirm(
                                 `Confirm Selection`,
-                                `Are you sure you want to select ${school.name}?`,
+                                <>Are you sure you want to select <span className="text-blue-500 font-bold">{school.name}</span>?</>,
                                 () => handleSchoolSelect(school)
                             )}
                         />
