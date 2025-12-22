@@ -107,10 +107,10 @@ const Assignments = ({ closeModal, updateAssign = false, onFirstAssignmentComple
 
   // Beds filtering logic
   const bedsToDisplay = selectedWard
-    ? updateAssign
-      ? selectedWard.beds.filter(bed => 
-          !bed.assignedUser || bed.assignedUser.name === user.name
-        )
+    ? updateAssign ? selectedWard?.beds
+      // ? selectedWard.beds.filter(bed => 
+      //     bed?.assignedUser || bed?.assignedUser?.name === user?.name
+      //   )
       : selectedWard.beds.filter(bed => 
           !bed.assignedUser || form.beds.includes(bed.id)
         )
