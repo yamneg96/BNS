@@ -15,38 +15,41 @@ const Beds = () => {
   const [searchTerm, setSearchTerm] = useState(''); // Add state for the search term\
   const [isExpand, setIsExpand] = useState(false);
   
-  if (loading) {
+if (loading) {
     return (
-      <div className='flex flex-col items-center justify-center p-10 bg-white rounded-xl shadow-xl border border-gray-200'>
-        <Timer size={64} className="text-gray-400 mb-4 animate-pulse" />
-        <div
-          className="w-16 h-16 rounded-full border-4 border-gray-300 border-t-indigo-500 spinner-border mt-4"
-          role="status"
-        >
-          <span className="sr-only">Loading...</span>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 max-w-md w-full">
+          <div className="relative mb-6">
+            {/* Pulsing Timer Icon */}
+            <Timer size={80} className="text-indigo-100 animate-pulse" />
+            
+            {/* Concentric Medical Spinner */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-2 border-slate-50 border-t-indigo-600 animate-spin"></div>
+            </div>
+          </div>
+
+          <div className="text-center space-y-2">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 mb-2">
+              System Synchronization
+            </h2>
+            <p className="text-2xl font-black text-slate-900 italic uppercase">
+              Initializing Ward Data...
+            </p>
+            <p className="text-sm font-medium text-slate-400">
+              Fetching departmental bed assignments and patient files.
+            </p>
+          </div>
+
+          {/* Minimalist Progress Bar placeholder */}
+          <div className="w-full bg-slate-50 h-1.5 rounded-full mt-8 overflow-hidden">
+            <div className="bg-indigo-600 h-full w-1/3 rounded-full animate-[loading_2s_ease-in-out_infinite]"></div>
+          </div>
         </div>
-        <p className='text-2xl font-semibold text-gray-700 mt-4'>Getting departments & wards...</p>
       </div>
     );
   }
 
-    if (!user?.subscription?.isActive) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="text-center p-8 bg-white rounded-xl shadow-2xl">
-          <div className="text-6xl mb-4 animate-bounce">❌</div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Access Denied</h2>
-          <p className="text-lg text-gray-600 mb-6">Please log in to view this page.</p>
-          <Link
-            to="/login"
-            className="inline-block px-8 py-3 text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 rounded-full shadow-lg transform hover:scale-105"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
   // Filter departments based on the search term
   const filteredDepartments = departments.map(dept => {
     const filteredWards = dept.wards.map(ward => {
