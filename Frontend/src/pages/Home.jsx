@@ -34,7 +34,7 @@ const Home = () => {
       {/* Main Content */}
       <div
         id="welcome"
-        className={`min-h-screen bg-cover bg-center flex flex-col items-center justify-center transition-opacity duration-700 ${
+        className={`min-h-screen bg-cover bg-center flex opacity-80 flex-col items-center justify-center transition-opacity duration-700 ${
           showWelcome ? "opacity-100" : "opacity-0"
         }`}
         style={{ backgroundImage: `url(${regImage})` }}
