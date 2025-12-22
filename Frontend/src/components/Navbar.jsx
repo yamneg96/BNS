@@ -59,7 +59,7 @@ const Navbar = () => {
 
                   <div className="flex items-center space-x-4">
                     <button 
-                      onClick={() => setIsProfileModalOpen(true)}
+                      onClick={() => {setIsMenuOpen(false); setIsProfileModalOpen(true)}}
                       className="cp flex items-center space-x-3 bg-slate-800 hover:bg-slate-700 p-1.5 pr-4 rounded-full transition-all border border-white/5"
                     >
                       <img 
@@ -109,12 +109,18 @@ const Navbar = () => {
           <div className="md:hidden bg-slate-900 border-t border-white/10 p-6 space-y-4 animate-in slide-in-from-top-5 duration-300">
             {user && user?.subscription?.isActive ? (
               <div className="flex flex-col space-y-4">
-                <div className="flex items-center space-x-4 mb-4 p-4 bg-slate-800 rounded-2xl">
-                  <img src={user?.image} className="w-12 h-12 rounded-full border-2 border-indigo-500" alt="user" />
+                    <button 
+                      onClick={() => {setIsMenuOpen(false); setIsProfileModalOpen(true)}}
+                      className="cp flex items-center space-x-3 bg-slate-800 hover:bg-slate-700 p-1.5 pr-4 rounded-full transition-all border border-white/5"
+                    >
+                      <img 
+                        src={user?.image || "https://placehold.co/100x100"} 
+                        alt="Profile" 
+                        className="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-500/30" 
+                      />
+                      <span className="text-sm font-bold text-white">{user.name}</span>
+                    </button>
                   <div>
-                    <p className="font-bold text-white">{user.name}</p>
-                    <p className="text-xs text-slate-400 uppercase tracking-widest">{user.role}</p>
-                  </div>
                 </div>
                 <Link to="/dashboard" onClick={toggleMenu} className="cp text-lg font-bold text-slate-300 px-2">Dashboard</Link>
                 <Link to="/beds" onClick={toggleMenu} className="cp text-lg font-bold text-slate-300 px-2">Beds</Link>
