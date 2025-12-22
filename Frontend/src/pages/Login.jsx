@@ -29,32 +29,31 @@ const Login = () => {
     try {
       setError("");
       const res = await login(email, password);
-
-      if (res) {
-        toast.custom((t) => (
-          <div className={`${t.visible ? "animate-enter" : "animate-leave"} max-w-md w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black/5 overflow-hidden border border-slate-100`}>
-            <div className="flex-1 p-5">
-              <div className="flex items-start">
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-indigo-100"
-                  src={user?.image || `https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?w=100`}
-                  alt="Profile"
-                />
-                <div className="ml-4">
-                  <p className="text-sm font-bold text-slate-900">Hello {user?.name}</p>
-                  <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-                    <span className="text-indigo-500">Login Successful, redirecting to Login.</span>
-                  </p>
-                </div>
+      toast.custom((t) => (
+        <div className={`${t.visible ? "animate-enter" : "animate-leave"} max-w-md w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black/5 overflow-hidden border border-slate-100`}>
+          <div className="flex-1 p-5">
+            <div className="flex items-start">
+              <img
+                className="h-12 w-12 rounded-full border-2 border-indigo-100"
+                src={user?.image || `https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?w=100`}
+                alt="Profile"
+              />
+              <div className="ml-4">
+                <p className="text-sm font-bold text-slate-900">Hello {user?.name}</p>
+                <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                  <span className="text-indigo-500">Login Successful, redirecting to Login.</span>
+                </p>
               </div>
             </div>
-            <button onClick={() => toast.dismiss(t.id)} className="px-6 border-l border-slate-100 text-sm font-bold text-indigo-600 hover:bg-slate-50 transition-colors">
-              Close
-            </button>
           </div>
-        ));
-        navigate("/universities");
-      } else {
+          <button onClick={() => toast.dismiss(t.id)} className="px-6 border-l border-slate-100 text-sm font-bold text-indigo-600 hover:bg-slate-50 transition-colors">
+            Close
+          </button>
+        </div>
+      ));
+      navigate("/dashboard");
+      // navigate("/universities") After successfully finished.
+      if(!res) {
         toast.custom((t) => (
           <div className={`${t.visible ? "animate-enter" : "animate-leave"} max-w-md w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black/5 overflow-hidden border border-slate-100`}>
             <div className="flex-1 p-5">

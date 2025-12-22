@@ -76,29 +76,6 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [user]);
 
-  /* ---------------- Auth Guard ---------------- */
-  if (!user?.subscription?.isActive) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
-        <div className="bg-white rounded-2xl shadow-xl p-10 max-w-md text-center">
-          <div className="text-5xl mb-4">🚫</div>
-          <h2 className="text-3xl font-bold text-slate-800 mb-3">
-            Access Restricted
-          </h2>
-          <p className="text-slate-600 mb-6">
-            Please sign in to access the medical dashboard.
-          </p>
-          <Link
-            to="/login"
-            className="inline-flex px-8 py-3 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700 transition"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-10">
       <div className="max-w-7xl mx-auto">
