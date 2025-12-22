@@ -5,49 +5,55 @@ import ConfirmModal from '../components/ConfirmModal';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { GraduationCap, ArrowRight } from 'lucide-react';
 
 const SelectUniversity = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [confirmData, setConfirmData] = useState({});
     const navigate = useNavigate();
-
     const { user } = useAuth();
 
-    const handleuniversitySelect = (university) => {
+    const handleUniversitySelect = (university) => {
         localStorage.setItem("university", university?.name);
-        toast.success(`You have selected ${university.name}`);
-        setIsOpen(false);
+        toast.success(`Access Granted: ${university.name}`);
         navigate('/schools');
     };
 
-    const openConfirm = (title, message, onConfirmCallback) => {
-        setConfirmData({ title, message, onConfirm: onConfirmCallback });
+    const openConfirm = (university) => {
+        setConfirmData({
+            title: "Switch Campus",
+            message: <>Confirming redirection to <span className="text-indigo-600">{university.name}</span>. This will update your local session data.</>,
+            onConfirm: () => handleUniversitySelect(university)
+        });
         setIsOpen(true);
     };
 
-    return user ? (
-        <div className='bg-gray-100 min-h-screen p-8 flex flex-col items-center'>
-            <div className='container mx-auto max-w-5xl'>
-                <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
-                  Hello, <span className="text-indigo-600">{user.name}</span>!
-                </h1>
-                <h2 className='text-center text-5xl font-extrabold text-gray-800 mb-10'>
-                    Select Your university
-                </h2>
-                <p className='text-center text-lg text-gray-600 mb-12'>
-                    Please choose your university to see available departments and beds.
-                </p>
+    if (!user) return <AccessDenied />;
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-10'>
-                    {Universities.map((university) => (
+    return (
+        <div className='bg-[#F8FAFC] min-h-screen p-6 md:p-12'>
+            <div className='container mx-auto max-w-6xl'>
+                {/* Header Section */}
+                <div className="mb-16">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-1 w-12 bg-indigo-600 rounded-full" />
+                        <span className="text-xs font-black uppercase tracking-[0.3em] text-indigo-600">Institution Gateway</span>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4">
+                        Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">{user.name.split(' ')[0]}</span>
+                    </h1>
+                    <p className='text-lg font-bold text-slate-500 max-w-2xl leading-relaxed italic'>
+                        Please select your affiliated university to access the clinical department mapping and bed management system.
+                    </p>
+                </div>
+
+                {/* Selection Grid */}
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+                    {Universities.map((uni) => (
                         <UniversityCard
-                            key={university}
-                            university={university}
-                            onClick={() => openConfirm(
-                                `Confirm Selection`,
-                                <>Are you sure you want to select <span className="text-blue-500 font-bold">{university.name}</span>?</>,
-                                () => handleuniversitySelect(university)
-                            )}
+                            key={uni.name}
+                            university={uni}
+                            onClick={() => openConfirm(uni)}
                         />
                     ))}
                 </div>
@@ -62,23 +68,25 @@ const SelectUniversity = () => {
                 isDestructive={false}
             />
         </div>
-    ) : (
-        <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8 text-center'>
-            <div className='bg-white shadow-xl rounded-2xl p-10 max-w-md w-full'>
-                <div className='text-6xl mb-4'>👩‍⚕️🩺🏥</div>
-                <h2 className='text-3xl font-bold text-gray-800 mb-4'>Access Denied</h2>
-                <p className='text-lg text-gray-600 mb-6'>
-                    Please log in to view the available universitys and beds.
-                </p>
-                <a 
-                    href="/login"
-                    className='inline-block bg-blue-600 text-white font-semibold py-3 px-6 rounded-full transition-colors hover:bg-blue-700'
-                >
-                    Go to Login
-                </a>
-            </div>
-        </div>
     );
 };
+
+// Internal Access Denied Component for Beauty
+const AccessDenied = () => (
+    <div className='flex items-center justify-center min-h-screen bg-slate-50 p-8'>
+        <div className='bg-white shadow-2xl rounded-[3rem] p-12 max-w-md w-full border border-slate-100 text-center'>
+            <div className='w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-100'>
+                <GraduationCap className="text-rose-500" size={40} />
+            </div>
+            <h2 className='text-3xl font-black text-slate-900 uppercase tracking-tighter mb-4'>Access Denied</h2>
+            <p className='text-sm font-bold text-slate-400 mb-8 leading-relaxed'>
+                Unauthorized terminal access detected. Please authenticate your credentials to view institutions.
+            </p>
+            <a href="/login" className='flex items-center justify-center gap-2 w-full bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest py-5 rounded-2xl hover:bg-indigo-600 transition-all shadow-xl shadow-slate-200'>
+                Return to Login <ArrowRight size={14} />
+            </a>
+        </div>
+    </div>
+);
 
 export default SelectUniversity;
