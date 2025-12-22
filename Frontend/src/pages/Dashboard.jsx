@@ -10,6 +10,7 @@ import {
   Users,
   LayoutDashboard,
   MessageCircleReply,
+  Timer
 } from "lucide-react";
 import { getUnreadNotificationsCount } from "../services/notification";
 
@@ -75,6 +76,41 @@ const Dashboard = () => {
     const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
   }, [user]);
+
+if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 max-w-md w-full">
+          <div className="relative mb-6">
+            {/* Pulsing Timer Icon */}
+            <Timer size={80} className="text-indigo-100 animate-pulse" />
+            
+            {/* Concentric Medical Spinner */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-2 border-slate-50 border-t-indigo-600 animate-spin"></div>
+            </div>
+          </div>
+
+          <div className="text-center space-y-2">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 mb-2">
+              System Synchronization
+            </h2>
+            <p className="text-2xl font-black text-slate-900 italic uppercase">
+              Initializing Ward Data...
+            </p>
+            <p className="text-sm font-medium text-slate-400">
+              Fetching departmental bed assignments and patient files.
+            </p>
+          </div>
+
+          {/* Minimalist Progress Bar placeholder */}
+          <div className="w-full bg-slate-50 h-1.5 rounded-full mt-8 overflow-hidden">
+            <div className="bg-indigo-600 h-full w-1/3 rounded-full animate-[loading_2s_ease-in-out_infinite]"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6 py-10">
