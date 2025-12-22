@@ -42,17 +42,17 @@ const VerifyOTP = () => {
         navigate("/login");
       } else{
         // initiate payment instead of going to login
-        setTimeout(() => {
-          setMessage("Account verified! Redirecting to payment...");
-          navigate('/screenshot');
-        }, 2000);
+        // setTimeout(() => {
+        //   setMessage("Account verified! Redirecting to payment..."); COMMENTED CAUSE ON TRIAL PERIOD.
+        //   navigate('/screenshot');
+        // }, 2000);
         // await initiateUserPayment(userEmail);
         localStorage.removeItem("email");
         localStorage.removeItem("selectedPlan");
-        // setMessage("Account verified! Redirecting to login...");
-        // setTimeout(() => {
-        //   navigate('/login');
-        // }, 1500);
+        setMessage("Account verified! Redirecting to login...");
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
         }
     } catch (err) {
       setError(err.message || "OTP verification failed");

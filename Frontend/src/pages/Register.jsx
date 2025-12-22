@@ -216,7 +216,7 @@ const Register = () => {
                 </div>
 
                 {/* Subscription Cards with responsive layout */}
-                {role !== 'intern' ? (<div className="mt-6">
+{/*                 {role !== 'intern' ? (<div className="mt-6">
                   <h3 className="text-lg font-semibold mb-4 text-center text-indigo-600">
                     Choose your subscription plan
                   </h3>
@@ -233,7 +233,7 @@ const Register = () => {
                   </div>
                 </div>) : (
                     <p className="font-bold text-green-500 text-xl">No Subscription for Staffs.</p>
-                )}
+                )} */}
                 {/* 👆COMMENTED FOR A TRIAL PERIOD.   */}
               </div>
               {/* ✅ Privacy & Terms Checkbox */}
