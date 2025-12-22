@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-// import connectDB from "./config/db.js";
+import connectDB from "./config/db.js";
 // import { startExpiryJob } from "./cronJobs/expireAssignments.js";
 // import { startSubscriptionExpiryJob } from "./cronJobs/subscriptionExpiryJob.js";
 
@@ -16,7 +16,7 @@ import cors from "cors";
 // import supportRoutes from './routes/supportRoutes.js'
 
 dotenv.config();
-// connectDB();
+connectDB();
 
 const app = express();
 app.use(express.json());
