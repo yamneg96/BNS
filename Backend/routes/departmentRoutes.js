@@ -5,22 +5,20 @@ import {
   getDepartment,
   admitPatient,
   dischargePatient,
+  recordPatientInBed,
+  getBedPatient,
 } from "../controllers/departmentController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// GET all departments
+
 router.get("/", getDepartments);
-
-// GET single department by ID
 router.get("/:id", getDepartment);
-
-// POST admit a patient to a bed
+router.get("/department/:deptId/wards/:wardName/beds/:bedId/patient", protect, getBedPatient);
 router.post("/admit", protect, admitPatient);
-
-// POST discharge a patient from a bed
+router.post("/patient", protect, recordPatientInBed);
 router.post("/discharge", protect, dischargePatient);
 
 export default router;

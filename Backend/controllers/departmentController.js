@@ -27,6 +27,20 @@ export const getDepartment = async (req, res) => {
   }
 };
 
+// Get patient info in a specific bed
+export const getBedPatient = async (req, res) => {
+  const { deptId, wardName, bedId } = req.params;
+
+  const department = await Department.findById(deptId);
+  const ward = department.wards.find(w => w.name === wardName);
+  const bed = ward.beds.find(b => b.id === Number(bedId));
+
+  return res.json({
+    bedId: bed.id,
+    patient: bed.patient,
+  });
+};
+
 // Admit patient
 export const admitPatient = async (req, res) => {
   try {
@@ -82,6 +96,65 @@ export const admitPatient = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Record patient info in a bed
+export const recordPatientInBed = async (req, res) => {
+  try {
+    const { deptId, wardName, bedId, patient } = req.body;
+
+    if (
+      !deptId ||
+      !wardName ||
+      bedId === undefined ||
+      !patient?.name ||
+      !patient?.age ||
+      !patient?.sex ||
+      !patient?.chiefComplaint
+    ) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    
+    const department = await Department.findById(deptId);
+    if (!department)
+      return res.status(404).json({ message: "Department not found" });
+
+    
+    const ward = department.wards.find(w => w.name === wardName);
+    if (!ward)
+      return res.status(404).json({ message: "Ward not found" });
+
+    
+    const bed = ward.beds.find(b => b.id === Number(bedId));
+    if (!bed)
+      return res.status(404).json({ message: "Bed not found" });
+
+    bed.patient = {
+      name: patient.name,
+      age: patient.age,
+      sex: patient.sex,
+      chiefComplaint: patient.chiefComplaint,
+      prediction: patient.prediction || {},
+      admittedAt: patient.admittedAt || new Date(),
+    };
+
+    await department.save();
+
+    return res.status(201).json({
+      message: "Patient info recorded successfully",
+      bed: {
+        id: bed.id,
+        status: bed.status,
+        patient: bed.patient,
+      },
+    });
+
+  } catch (error) {
+    console.error("recordPatientInBed error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 // Discharge patient
 export const dischargePatient = async (req, res) => {
