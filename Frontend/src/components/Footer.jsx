@@ -8,7 +8,7 @@ const Footer = () => {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <footer className="bg-slate-950 text-slate-400 py-12 border-t border-white/5">
+    <footer className="bg-slate-900 text-slate-400 py-12 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         
         {/* Main Content Row */}

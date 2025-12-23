@@ -56,7 +56,7 @@ const Register = () => {
   return (
     /* Changed h-screen to min-h-screen and removed overflow-hidden to allow Footer visibility */
     <div className="min-h-screen w-full bg-white font-sans">
-      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] w-full">
+      <div className="flex flex-col lg:flex-row h-screen w-full">
         
         {/* Left Side: Visual Branding */}
         <div className="hidden lg:relative lg:flex lg:w-5/12">
@@ -126,7 +126,7 @@ const Register = () => {
                     <input
                       type="email" required
                       className="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-100 text-slate-900 rounded-2xl focus:bg-white focus:border-indigo-500 transition-all outline-none font-semibold"
-                      placeholder="name@hospital.org"
+                      placeholder="yourname@gmail.com"
                       value={email} onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
@@ -182,7 +182,7 @@ const Register = () => {
               </div>
 
               {/* Subscription Section */}
-              <div className="pt-4">
+              {/* <div className="pt-4">
                 {role !== 'intern' ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-4">
@@ -199,7 +199,7 @@ const Register = () => {
                         isSelected={subscriptionPlan === "yearly"}
                         onSelect={() => setSubscriptionPlan("yearly")}
                         role={role}
-                      /> */}
+                      /> 
                     </div>
                   </div>
                 ) : (
@@ -208,7 +208,7 @@ const Register = () => {
                     <p className="font-bold text-indigo-900 text-sm italic leading-tight">Standard medical staff access enabled (No subscription required).</p>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Terms Checkbox */}
               <div className="flex items-center justify-center gap-3 pt-4 border-t border-slate-100">
