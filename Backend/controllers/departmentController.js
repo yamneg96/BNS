@@ -2,6 +2,8 @@ import Department from "../models/Department.js";
 import User from "../models/User.js";
 import { sendEmail } from "../utils/email.js";
 import Notification from "../models/Notification.js";
+import PatientHistory from "../models/PatientHistory.js";
+
 
 // Get all departments
 export const getDepartments = async (req, res) => {
@@ -101,6 +103,7 @@ export const admitPatient = async (req, res) => {
 export const recordPatientInBed = async (req, res) => {
   try {
     const { deptId, wardName, bedId, patient } = req.body;
+    const userId = req.user?._id;
 
     if (
       !deptId ||
@@ -114,37 +117,49 @@ export const recordPatientInBed = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    
     const department = await Department.findById(deptId);
     if (!department)
       return res.status(404).json({ message: "Department not found" });
 
-    
     const ward = department.wards.find(w => w.name === wardName);
     if (!ward)
       return res.status(404).json({ message: "Ward not found" });
 
-    
     const bed = ward.beds.find(b => b.id === Number(bedId));
     if (!bed)
       return res.status(404).json({ message: "Bed not found" });
 
+    //  Store CURRENT patient in bed
     bed.patient = {
       name: patient.name,
       age: patient.age,
       sex: patient.sex,
       chiefComplaint: patient.chiefComplaint,
       prediction: patient.prediction || {},
-      admittedAt: patient.admittedAt || new Date(),
+      admittedAt: new Date(),
     };
 
     await department.save();
 
+    // STORE HISTORY (NEW)
+    await PatientHistory.create({
+      department: deptId,
+      wardName,
+      bedId: Number(bedId),
+      patient: {
+        name: patient.name,
+        age: patient.age,
+        sex: patient.sex,
+        chiefComplaint: patient.chiefComplaint,
+        prediction: patient.prediction || {},
+      },
+      recordedBy: userId,
+    });
+
     return res.status(201).json({
-      message: "Patient info recorded successfully",
+      message: "Patient info recorded and history saved",
       bed: {
         id: bed.id,
-        status: bed.status,
         patient: bed.patient,
       },
     });
@@ -154,6 +169,7 @@ export const recordPatientInBed = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 // Discharge patient
@@ -209,4 +225,16 @@ export const dischargePatient = async (req, res) => {
     console.error("dischargePatient error:", error);
     res.status(500).json({ error: error.message });
   }
+};
+
+export const getBedPatientHistory = async (req, res) => {
+  const { deptId, wardName, bedId } = req.params;
+
+  const history = await PatientHistory.find({
+    department: deptId,
+    wardName,
+    bedId: Number(bedId),
+  }).sort({ recordedAt: -1 });
+
+  res.json(history);
 };
