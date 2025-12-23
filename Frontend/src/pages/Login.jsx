@@ -16,6 +16,8 @@ const Login = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const university = localStorage.getItem("university");
+
   useEffect(() => {
     if (user?.subscription?.isActive) {
       navigate("/dashboard");
@@ -120,7 +122,9 @@ const Login = () => {
         {/* Right Side: Login Form (Full width on Mobile) */}
         <div className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 sm:p-12 md:p-24 bg-white">
           <div className="w-full max-w-md space-y-10">
-            
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white mb-6">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em]">{university} University</span>
+            </div>
             <div className="space-y-3">
               <h2 className="text-4xl font-black text-slate-900 tracking-tight">Sign In</h2>
               <p className="text-slate-500 font-medium">

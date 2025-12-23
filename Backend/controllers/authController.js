@@ -106,7 +106,7 @@ export const registerUser = async (req, res) => {
       phone,
       subscription: {
         plan,
-        isActive: true,
+        isActive: false,
       },
       verifyOtp: otp,
       verifyOtpExpireAt: otpExpire,
