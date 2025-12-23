@@ -371,15 +371,29 @@ export const activateSubscription = async (req, res) => {
       return res.status(400).json({ message: "No payment screenshot uploaded" });
 
     const startDate = new Date();
-    const endDate = new Date(startDate);
-    user.subscription.plan === "yearly"
-      ? endDate.setFullYear(endDate.getFullYear() + 1)
-      : endDate.setMonth(endDate.getMonth() + 1);
+    let endDate;
+    let amount = 0;
+
+    // Calculate endDate and amount based on plan
+    if (user.subscription.plan === "weekly") {
+      endDate = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      amount = 25; // weekly price
+    } else if (user.subscription.plan === "monthly") {
+      endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+      amount = 100; // monthly price
+    } else if (user.subscription.plan === "yearly") {
+      endDate = new Date(startDate);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+      amount = 1000; // yearly price
+    }
 
     user.subscription.isActive = true;
     user.subscription.startDate = startDate;
     user.subscription.endDate = endDate;
-    user.subscription.paidAt = new Date();
+    user.subscription.amountPaid = amount;
+    user.subscription.paidAt = startDate;
+
     await user.save();
 
     // ✉️ Send activation email
@@ -409,6 +423,7 @@ export const activateSubscription = async (req, res) => {
     res.status(500).json({ message: "Error activating subscription", error: err.message });
   }
 };
+
 
 
 //  Deactivate subscription
