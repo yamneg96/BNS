@@ -126,7 +126,7 @@ const Register = () => {
                     <input
                       type="email" required
                       className="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-100 text-slate-900 rounded-2xl focus:bg-white focus:border-indigo-500 transition-all outline-none font-semibold"
-                      placeholder="name@hospital.org"
+                      placeholder="yourname@gmail.com"
                       value={email} onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>

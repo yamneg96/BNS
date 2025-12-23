@@ -148,7 +148,7 @@ const Login = () => {
                       type="email"
                       required
                       className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 text-slate-900 rounded-2xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none font-semibold"
-                      placeholder="admin@hospital.org"
+                      placeholder="yourname@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
