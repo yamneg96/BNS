@@ -3,17 +3,17 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 // import { startExpiryJob } from "./cronJobs/expireAssignments.js";
-// import { startSubscriptionExpiryJob } from "./cronJobs/subscriptionExpiryJob.js";
+import { startSubscriptionNotificationJob } from "./cronJobs/subscriptionExpiryJob.js";
 
 
 import authRoutes from "./routes/authRoutes.js";
-// import paymentRoutes from "./routes/paymentRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 // import departmentRoutes from "./routes/departmentRoutes.js";
 // import assignmentRoutes from './routes/assignmentRoutes.js';
 // import adminRoutes from "./routes/adminRoutes.js";
 // import supervisorRoutes from "./routes/supervisorRoutes.js";
 // import notificationRoutes from "./routes/notificationRoutes.js"
-// import supportRoutes from './routes/supportRoutes.js'
+import supportRoutes from './routes/supportRoutes.js'
 
 dotenv.config();
 connectDB();
@@ -23,7 +23,7 @@ app.use(express.json());
 
 
 // startExpiryJob();
-// startSubscriptionExpiryJob();
+startSubscriptionNotificationJob();
 
 const allowedOrigins = [
   "http://localhost:5173",          // local dev
@@ -47,14 +47,14 @@ app.use(
 
 // Routes
 app.use("/api/auth", authRoutes);
-// app.use("/api/payment", paymentRoutes);
+app.use("/api/payment", paymentRoutes);
 // app.use("/api/departments", departmentRoutes);
 // app.use("/api/assignments", assignmentRoutes);
 // app.use("/api/admin", adminRoutes);
 // app.use("/api/supervisor", supervisorRoutes);
 // app.use("/api/notifications", notificationRoutes)
 
-// app.use("/api/support", supportRoutes);
+app.use("/api/support", supportRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
