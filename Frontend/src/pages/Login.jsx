@@ -43,7 +43,7 @@ const Login = () => {
               <div className="ml-4">
                 <p className="text-sm font-bold text-slate-900">Hello {user?.name}</p>
                 <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-                  <span className="text-indigo-500">Login Successful, redirecting to Login.</span>
+                  <span className="text-indigo-500">Login Successful, redirecting to dashboard.</span>
                 </p>
               </div>
             </div>
