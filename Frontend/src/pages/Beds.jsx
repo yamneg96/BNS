@@ -1,108 +1,248 @@
-import React, { useState } from "react";
-import { Menu, X, Hospital, Bed, User, Building2, Timer } from "lucide-react";
+import React, { useState, useEffect, useRef, memo } from "react";
+import { Menu, X, Hospital, Bed, User, Building2, Timer, ArrowRightLeft, UserPlus, Save, LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useBed } from "../context/BedContext";
 import toast from "react-hot-toast";
 import GoBack from '../components/GoBack';
-import SearchBar from '../components/SearchBar'; // Import the new SearchBar component
-import { Link } from "react-router-dom";
+import SearchBar from '../components/SearchBar';
 
+// --- WARD BED CONTAINER (MOVED OUTSIDE) ---
+const WardBedContainer = memo(({ ward, deptId, departments, patientData, transferData, onPatientChange, onTransferChange, onAdmit, onDischarge, user }) => {
+  const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-scroll logic enabled for ALL screen widths
+  useEffect(() => {
+    if (isPaused) return; 
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        // If we reached the end, snap back to start
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          // Scroll by the width of one bed card
+          scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+        }
+      }
+    }, 4000); 
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  return (
+    <div className="relative group">
+      <div 
+        ref={scrollRef}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        /* Removed lg:flex-wrap to keep it horizontal on PC */
+        className="flex flex-nowrap overflow-x-scroll gap-6 pb-6 snap-x scrollbar-hide scroll-smooth"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {ward.beds.map((bed) => {
+          const currentName = patientData[bed.id]?.name ?? bed.patient?.name ?? "";
+          const currentAge = patientData[bed.id]?.age ?? bed.patient?.age ?? "";
+          const currentSex = patientData[bed.id]?.sex ?? bed.patient?.sex ?? "";
+          const currentComplaint = patientData[bed.id]?.chiefComplaint ?? bed.patient?.chiefComplaint ?? "";
+
+          const tData = transferData[bed.id] || {};
+          const tDept = departments.find(d => d._id === tData.deptId);
+          const tWard = tDept?.wards.find(w => w.name === tData.wardName);
+          const tAvailableBeds = tWard?.beds.filter(b => b.status === "available") || [];
+
+          return (
+            <div
+              key={bed.id}
+              /* Fixed widths to ensure they don't shrink and stay consistent in the slider */
+              className={`flex-shrink-0 w-[320px] md:w-[420px] snap-center p-6 rounded-[2rem] border-2 transition-all duration-300 ${
+                bed.status === "occupied" ? "bg-red-50/50 border-red-100" : "bg-green-50/50 border-green-100"
+              }`}
+            >
+              {bed.status === "occupied" && (
+                <div className="mb-4 p-4 bg-white rounded-2xl border border-indigo-100 shadow-sm">
+                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <ArrowRightLeft size={14} /> Transfer Patient To:
+                  </p>
+                  <div className="space-y-2">
+                    <select 
+                      value={tData.deptId || ""}
+                      onChange={(e) => onTransferChange(bed.id, 'deptId', e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-xl border border-slate-200 outline-none bg-slate-50"
+                    >
+                      <option value="">Select Department</option>
+                      {departments.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
+                    </select>
+
+                    {tData.deptId && (
+                      <select 
+                        value={tData.wardName || ""}
+                        onChange={(e) => onTransferChange(bed.id, 'wardName', e.target.value)}
+                        className="w-full text-xs p-2.5 rounded-xl border border-slate-200 outline-none bg-slate-50"
+                      >
+                        <option value="">Select Ward</option>
+                        {tDept.wards.map(w => <option key={w.name} value={w.name}>{w.name}</option>)}
+                      </select>
+                    )}
+
+                    {tData.wardName && (
+                      <select 
+                        value={tData.targetBedId || ""}
+                        onChange={(e) => onTransferChange(bed.id, 'targetBedId', e.target.value)}
+                        className="w-full text-xs p-2.5 rounded-xl border border-slate-200 outline-none bg-slate-50"
+                      >
+                        <option value="">Select Bed</option>
+                        {tAvailableBeds.map(b => <option key={b.id} value={b.id}>Bed {b.id}</option>)}
+                      </select>
+                    )}
+
+                    <button 
+                      disabled={!tData.targetBedId}
+                      className={`w-full text-white text-[10px] font-black py-2.5 rounded-xl transition-all uppercase tracking-widest ${
+                        !tData.targetBedId ? "bg-slate-300" : "bg-indigo-600 hover:bg-indigo-700"
+                      }`}
+                      onClick={() => toast.success("Transfer Initialized")}
+                    >
+                      Transfer
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-3">
+                  <div className={`p-3 rounded-2xl ${bed.status === 'occupied' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+                    <Bed size={20} />
+                  </div>
+                  <div>
+                    <p className="font-black text-lg text-slate-800">BED {bed.id}</p>
+                    <p className="text-[10px] font-bold text-slate-400">Assigned: {bed.assignedUser?.name ? "YES" : "NO"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 bg-white p-5 rounded-[1.5rem] border border-slate-100 shadow-sm">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                  <UserPlus size={14} /> Patient Info
+                </p>
+                <input 
+                  placeholder="Name"
+                  value={currentName}
+                  className="w-full p-3 text-sm rounded-xl border border-slate-100 bg-slate-50 outline-none"
+                  onChange={(e) => onPatientChange(bed.id, 'name', e.target.value)}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input 
+                    type="number" placeholder="Age" value={currentAge}
+                    className="p-3 text-sm rounded-xl border border-slate-100 bg-slate-50"
+                    onChange={(e) => onPatientChange(bed.id, 'age', e.target.value)}
+                  />
+                  <select 
+                    value={currentSex}
+                    className="p-3 text-sm rounded-xl border border-slate-100 bg-slate-50"
+                    onChange={(e) => onPatientChange(bed.id, 'sex', e.target.value)}
+                  >
+                    <option value="">Sex</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                <textarea 
+                  placeholder="Complaint" value={currentComplaint}
+                  className="w-full p-3 text-sm rounded-xl border border-slate-100 bg-slate-50 h-20 resize-none"
+                  onChange={(e) => onPatientChange(bed.id, 'chiefComplaint', e.target.value)}
+                />
+                
+                <button 
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-slate-800 text-white rounded-xl font-black text-[10px] uppercase tracking-widest"
+                  onClick={() => toast.success("Data Saved Locally")}
+                >
+                  <Save size={14} /> Save Patient Info
+                </button>
+
+                <div className="h-[1px] bg-slate-100 my-2" />
+
+                {bed.status === "available" ? (
+                  <button 
+                    onClick={() => onAdmit(deptId, ward.name, bed.id, patientData[bed.id])}
+                    className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase shadow-lg"
+                  >
+                    Admit
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onDischarge(deptId, ward.name, bed.id)}
+                    className="w-full py-4 bg-red-600 text-white rounded-xl font-black text-xs uppercase"
+                  >
+                    Discharge
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
+// --- MAIN BEDS COMPONENT ---
 const Beds = () => {
   const { user } = useAuth();
   const { departments, loading, admit, discharge } = useBed();
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // Add state for the search term\
-  const [isExpand, setIsExpand] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   
-if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
-        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 max-w-md w-full">
-          <div className="relative mb-6">
-            {/* Pulsing Timer Icon */}
-            <Timer size={80} className="text-indigo-100 animate-pulse" />
-            
-            {/* Concentric Medical Spinner */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full border-2 border-slate-50 border-t-indigo-600 animate-spin"></div>
-            </div>
-          </div>
+  const [patientData, setPatientData] = useState({});
+  const [transferData, setTransferData] = useState({});
 
-          <div className="text-center space-y-2">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 mb-2">
-              System Synchronization
-            </h2>
-            <p className="text-2xl font-black text-slate-900 italic uppercase">
-              Initializing Ward Data...
-            </p>
-            <p className="text-sm font-medium text-slate-400">
-              Fetching departmental bed assignments and patient files.
-            </p>
-          </div>
+  if (loading) return <div className="p-20 text-center">Loading Ward Data...</div>;
 
-          {/* Minimalist Progress Bar placeholder */}
-          <div className="w-full bg-slate-50 h-1.5 rounded-full mt-8 overflow-hidden">
-            <div className="bg-indigo-600 h-full w-1/3 rounded-full animate-[loading_2s_ease-in-out_infinite]"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Filter departments based on the search term
   const filteredDepartments = departments.map(dept => {
     const filteredWards = dept.wards.map(ward => {
-      const filteredBeds = ward.beds.filter(bed => {
-        // Only show beds that are assigned and match the search term
-        return ward.name.toLowerCase().includes(searchTerm.toLowerCase());
-      });
+      const filteredBeds = ward.beds.filter(() => ward.name.toLowerCase().includes(searchTerm.toLowerCase()));
       return { ...ward, beds: filteredBeds };
-    }).filter(ward => ward.beds.length > 0); // Keep only wards that have matching beds
+    }).filter(ward => ward.beds.length > 0);
     return { ...dept, wards: filteredWards };
-  }).filter(dept => dept.wards.length > 0); // Keep only departments that have matching wards
+  }).filter(dept => dept.wards.length > 0);
 
-  // The current view will be either the filtered list or the full list
   const departmentsToDisplay = searchTerm ? filteredDepartments : departments;
   const currentDepartment = selectedDepartment || (departmentsToDisplay.length > 0 ? departmentsToDisplay[0] : null);
 
-  const handleSearch = () => {
-    // This function can be used to trigger a search if a button is used.
-    // In this implementation, filtering happens on every keystroke, so this might not be strictly necessary,
-    // but it's good practice for a button click handler.
-    // console.log("Searching for:", searchTerm);
+  const handlePatientInputChange = (bedId, field, value) => {
+    setPatientData(prev => ({
+      ...prev,
+      [bedId]: { ...prev[bedId], [field]: value }
+    }));
   };
-  
+
+  const handleTransferChange = (bedId, field, value) => {
+    setTransferData(prev => ({
+      ...prev,
+      [bedId]: { 
+        ...prev[bedId], 
+        [field]: value,
+        ...(field === 'deptId' ? { wardName: '', targetBedId: '' } : {}),
+        ...(field === 'wardName' ? { targetBedId: '' } : {})
+      }
+    }));
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:relative lg:translate-x-0 lg:w-64 lg:border-r lg:border-gray-200`}
-      >
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">Departments</h2>
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="p-2 text-gray-600 hover:text-gray-900 lg:hidden rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-          >
-            <X size={24} />
-          </button>
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+      <div className={`fixed inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:relative lg:translate-x-0 lg:w-72 lg:border-r lg:border-slate-100`}>
+        <div className="p-8 border-b border-slate-50 font-black text-slate-900 italic uppercase text-2xl">
+          Departments
         </div>
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-3">
           {departmentsToDisplay.map((dept) => (
             <button
               key={dept._id}
-              onClick={() => {
-                setSelectedDepartment(dept);
-                setIsSidebarOpen(false);
-              }}
-              className={`w-full text-left p-3 rounded-lg transition-colors duration-200 ${
-                currentDepartment?._id === dept._id
-                  ? "bg-indigo-600 text-white shadow-md font-semibold"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
+              onClick={() => { setSelectedDepartment(dept); setIsSidebarOpen(false); }}
+              className={`w-full text-left p-5 rounded-[1.5rem] transition-all duration-300 font-bold text-sm ${currentDepartment?._id === dept._id ? "bg-indigo-600 text-white shadow-xl translate-x-2" : "text-slate-400 hover:bg-slate-50"}`}
             >
               {dept.name}
             </button>
@@ -110,140 +250,51 @@ if (loading) {
         </nav>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="flex justify-between items-start mb-6">
+      <div className="flex-1 p-4 md:p-10">
+        <div className="flex justify-between items-center mb-8">
           <GoBack />
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="cursor-pointer fixed bottom-6 left-6 z-50 p-4 bg-indigo-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-indigo-700 hover:scale-110 lg:hidden"
-          >
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="lg:hidden p-4 bg-indigo-600 text-white rounded-2xl shadow-xl">
             <Menu size={24} />
           </button>
         </div>
         
-        {/* Search Bar */}
-        <SearchBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          onSearchClick={handleSearch}
-          placeholder={`Search by Ward Name`}
-        />
+        <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} placeholder={`Search Ward...`} />
 
         {currentDepartment && (
-          <>
-            <div className="mb-8 text-center mt-8">
-              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 flex items-center justify-center space-x-3 mb-2">
-                <Building2 className="h-10 w-10 text-indigo-600" />
+          <div className="mt-12 space-y-16">
+            <div className="text-center">
+              <h1 className="text-5xl md:text-7xl font-black text-slate-900 flex items-center justify-center space-x-4 italic tracking-tighter">
+                <Building2 className="h-12 w-12 text-indigo-600" />
                 <span>{currentDepartment.name}</span>
               </h1>
-              <p className="text-xl text-gray-500">
-                {currentDepartment.wards.length} Wards
-              </p>
             </div>
 
-            {/* Wards grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {currentDepartment.wards.map((ward, wardIndex) => {
-                const totalBeds = ward.beds.length;
-                const occupiedBeds = ward.beds.filter(
-                  (bed) => bed.status === "occupied"
-                ).length;
-                const availableBeds = totalBeds - occupiedBeds;
-
-                return (
-                  <div
-                    key={wardIndex}
-                    className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
-                  >
-                    <div className="flex items-center space-x-2 text-indigo-600 mb-4">
-                      <Hospital className="h-8 w-8" />
-                      <h3 className="text-2xl font-bold">{ward.name}</h3>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 text-center text-sm font-semibold mb-4">
-                      <span className="bg-red-100 text-red-700 p-2 rounded-lg">Occupied: {occupiedBeds}</span>
-                      <span className="bg-green-100 text-green-700 p-2 rounded-lg">Available: {availableBeds}</span>
-                    </div>
-                    <details className="mt-4">
-                      <summary 
-                      onClick={() => setIsExpand(!isExpand)}
-                      className="cursor-pointer bg-indigo-600 text-white py-3 px-4 rounded-lg shadow-inner font-bold flex justify-between items-center transition-colors hover:bg-indigo-700">
-                        <span>Bed Details</span>
-                        <span className="text-xs text-indigo-200">
-                          {`${isExpand ? 'Click to condense' : 'Click to expand'}`}
-                        </span>
-                      </summary>
-                      <div className="mt-4 space-y-4">
-                        {ward.beds.map((bed) => (
-                          <div
-                            key={bed.id}
-                            className={`p-4 rounded-lg border-2 shadow-inner transition-colors duration-200 ${
-                              bed.assignedUser?.name
-                                ? "bg-red-50 border-red-200 text-red-800"
-                                : "bg-green-50 border-green-200 text-green-800"
-                            }`}
-                          >
-                            <p className="font-bold flex items-center space-x-2">
-                              <Bed className="h-5 w-5" />
-                              <span>Bed ID: {bed.id}</span>
-                            </p>
-                            <p className="text-sm mt-2 flex items-center space-x-1">
-                              <User className="w-4 h-4" />
-                              <span>Assigned: {bed.assignedUser?.name ? "Yes" : 'No'}</span>
-                            </p>
-                            <p className="text-sm mt-1">
-                              Status: <span className="font-semibold">{bed.status}</span>
-                            </p>
-                            {(bed?.assignedUser?.name === user.name) ? (
-                                <div className="text-center">
-                                  <p>These Beds are assigned to yourself.</p>
-                                </div>
-                            ) : (
-                                <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                                {/* Admit Button */}
-                                <button
-                                  onClick={() => {
-                                    if (bed?.assignedUser?._id === user.id) {
-                                      toast.error("You cannot admit yourself.");
-                                    } else {
-                                      admit(currentDepartment._id, ward.name, bed.id);
-                                    }
-                                  }}
-                                  disabled={bed.status === "occupied"}
-                                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium ${
-                                    (bed.status === 'occupied'  ? ' bg-gray-300 text-gray-600 cursor-not-allowed' : ' bg-blue-600 text-white hover:bg-blue-700 cursor-pointer')
-                                  }`}
-                                >
-                                  {bed.status === "occupied" ? "Patient Admitted" : "Admit Patient"}
-                                </button>
-                                {/* Discharge Button */}
-                                <button
-                                  onClick={() => {
-                                    if (bed?.assignedUser?._id === user._id) {
-                                      toast.error("You cannot discharge yourself.");
-                                    } else {
-                                      discharge(currentDepartment._id, ward.name, bed.id);
-                                    }
-                                  }}
-                                  disabled={bed.status === "available"}
-                                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium ${
-                                    (bed.status === 'available' ? ' bg-gray-300 text-gray-600 cursor-not-allowed' : ' bg-blue-600 text-white hover:bg-blue-700 cursor-pointer')
-                                  }`}
-                                >
-                                  {bed.status === "available" ? "Patient Discharged" : "Discharge Patient"}
-                                </button>
-                                </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </details>
+            {currentDepartment.wards.map((ward, idx) => (
+              <div key={idx} className="bg-white rounded-[3rem] p-8 md:p-12 shadow-sm border border-slate-100">
+                <div className="flex items-center gap-6 mb-10">
+                  <div className="p-5 bg-indigo-50 rounded-3xl text-indigo-600">
+                    <Hospital size={40} />
                   </div>
-                );
-              })}
-            </div>
-          </>
+                  <div>
+                    <h3 className="text-4xl font-black text-slate-800 italic uppercase tracking-tighter">{ward.name}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">Live Status</p>
+                  </div>
+                </div>
+                <WardBedContainer 
+                  ward={ward} 
+                  deptId={currentDepartment._id} 
+                  departments={departments}
+                  patientData={patientData}
+                  transferData={transferData}
+                  onPatientChange={handlePatientInputChange}
+                  onTransferChange={handleTransferChange}
+                  onAdmit={admit}
+                  onDischarge={discharge}
+                  user={user}
+                />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
