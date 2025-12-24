@@ -30,24 +30,19 @@ const allowedOrigins = [
   "https://bednotify.vercel.app",
   "https://bns-iota-three.vercel.app",   // your deployed frontend
   "https://bnst-ao5j.vercel.app",
-  "http://localhost:5000"       // another local dev
+  "http://localhost:5000", // another local dev
+  "*"       
 ];
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true,
-//   })
-// );
 app.use(
   cors({
-    origin: ["http://localhost:5173", "*"], // You can specify more allowed origins
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
