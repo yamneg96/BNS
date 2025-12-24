@@ -89,7 +89,7 @@ const Register = () => {
       <div className="w-full lg:w-7/12 flex items-start justify-center bg-white p-6 sm:p-12 lg:p-20 overflow-y-visible">
         <div className="w-full max-w-2xl space-y-8 pt-4 pb-12">
           {/* University Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white mb-6">
+          <div onClick={navigate("/choice")} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white mb-6">
             <span className="text-[9px] font-black uppercase tracking-[0.3em]">{university} University</span>
           </div>            
           
