@@ -17,6 +17,9 @@
   }
 }
 
+/* Trial Period animation */
+
+
 @keyframes custom-spin {
   to {
     transform: rotate(360deg);
@@ -27,4 +30,38 @@
 .spinner-border {
   border-top-color: transparent;
   animation: custom-spin 1s linear infinite;
+}
+
+@keyframes liquidFill {
+  0% { background-position: 50% 100%; }
+  100% { background-position: 50% 0%; }
+}
+
+@keyframes subtleBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.slick-trial-badge {
+  /* Create a hidden background that sits below the view */
+  background: linear-gradient(to top, #22c55e 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 50% 100%;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slick-trial-badge:hover {
+  background-position: 50% 0%;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+  animation: subtleBounce 2s infinite ease-in-out;
+}
+
+/* Ensure text stays readable by transitioning color */
+.slick-trial-badge:hover span {
+  color: rgb(13, 217, 13);
+  letter-spacing: 0.4em; /* Creative touch: text expands slightly */
+}
+
+.slick-trial-badge span {
+  transition: all 0.4s ease;
 }

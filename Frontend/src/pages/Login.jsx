@@ -133,6 +133,12 @@ const Login = () => {
                   Register Facility
                 </a>
               </p>
+              <div className="mt-1 inline-flex items-center border-2 border-green-500 gap-2 px-5 py-2 rounded-full text-white font-extrabold mb-6 cursor-pointer slick-trial-badge" 
+                  aria-label="This is a free trial phase.">
+                <span className="text-[10px] uppercase tracking-[0.3em] select-none">
+                  Trial Period
+                </span>
+              </div>
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
