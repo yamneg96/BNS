@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 // import { startExpiryJob } from "./cronJobs/expireAssignments.js";
-// import { startSubscriptionExpiryJob } from "./cronJobs/subscriptionExpiryJob.js";
+import { startSubscriptionNotificationJob } from "./cronJobs/subscriptionExpiryJob.js";
 
 
 import authRoutes from "./routes/authRoutes.js";
@@ -23,7 +23,7 @@ app.use(express.json());
 
 
 // startExpiryJob();
-// startSubscriptionExpiryJob();
+startSubscriptionNotificationJob();
 
 const allowedOrigins = [
   "http://localhost:5173",          // local dev
