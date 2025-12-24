@@ -122,7 +122,7 @@ const Login = () => {
         {/* Right Side: Login Form (Full width on Mobile) */}
         <div className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 sm:p-12 md:p-24 bg-white">
           <div className="w-full max-w-md space-y-10">
-            <div onClick={navigate("/choice")} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white mb-6">
+            <div onClick={() => navigate("/choice")} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white mb-6">
               <span className="text-[9px] font-black uppercase tracking-[0.3em]">{university} University</span>
             </div>
             <div className="space-y-3">
