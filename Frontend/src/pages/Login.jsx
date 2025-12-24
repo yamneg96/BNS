@@ -55,7 +55,7 @@ const Login = () => {
       ));
       navigate("/dashboard");
       // navigate("/universities") After successfully finished.
-      if(!res) {
+      if(user?.subscription?.isActive === false) {
         toast.custom((t) => (
           <div className={`${t.visible ? "animate-enter" : "animate-leave"} max-w-md w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black/5 overflow-hidden border border-slate-100`}>
             <div className="flex-1 p-5">
