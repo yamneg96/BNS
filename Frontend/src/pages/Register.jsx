@@ -186,7 +186,7 @@ const Register = () => {
             </div>
 
             {/* Subscription Section */}
-            <div className="pt-4">
+            {/* <div className="pt-4">
               {role !== 'intern' ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 mb-4">
@@ -207,7 +207,7 @@ const Register = () => {
                   <p className="font-bold text-indigo-900 text-sm italic leading-tight">Standard medical staff access enabled (No subscription required).</p>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Terms Checkbox */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-slate-100">
