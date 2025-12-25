@@ -100,7 +100,7 @@ const Admin = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`cp flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                   activeTab === tab.id ? "bg-slate-900 text-white shadow-lg" : "text-slate-400 hover:text-slate-600"
                 }`}
               >
@@ -159,7 +159,7 @@ const Admin = () => {
                         e.stopPropagation();
                         openConfirm("Decommission", `Purge ${dept.name}?`, () => removeDepartment(dept._id));
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                      className="cp opacity-100 p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -191,7 +191,7 @@ const Admin = () => {
                       />
                       <button
                         onClick={() => { if (newWardName.trim()) { createWard(selectedDept._id, newWardName.trim()); setNewWardName(""); } }}
-                        className="py-4 px-6 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-900 transition-all shadow-md"
+                        className="cp py-4 px-6 bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-900 transition-all shadow-md"
                       >
                         Deploy Ward
                       </button>
@@ -207,8 +207,8 @@ const Admin = () => {
                           }`}
                         >
                           <div className="flex justify-between">
-                            <span className="font-black text-slate-900 uppercase text-xs italic">{ward.name}</span>
-                            <button onClick={() => removeWardById(selectedDept._id, ward._id)} className="text-rose-400 hover:text-rose-600">
+                            <span className="cp font-black text-slate-900 uppercase text-xs italic">{ward.name}</span>
+                            <button onClick={() => removeWardById(selectedDept._id, ward._id)} className="cp text-rose-400 hover:text-rose-600">
                               <Trash2 size={12} />
                             </button>
                           </div>
@@ -247,7 +247,7 @@ const Admin = () => {
                         />
                         <button
                           onClick={() => { if (newBedId.trim()) { createBed(selectedDept._id, selectedWard._id, newBedId.trim()); setNewBedId(""); } }}
-                          className="p-2.5 bg-slate-900 text-white rounded-lg hover:bg-indigo-600 transition-all"
+                          className="cp p-2.5 bg-slate-900 text-white rounded-lg hover:bg-indigo-600 transition-all"
                         >
                           <Plus size={16} />
                         </button>
