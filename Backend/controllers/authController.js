@@ -46,7 +46,7 @@ export const registerUser = async (req, res) => {
 
      const adminEmails = [
             "yamlaknegash96@gmail.com",
-            "secondadmin@gmail.com"
+            "ctemesgen85@gmail.com"
         ];
     
        if (adminEmails.includes(email)) {
