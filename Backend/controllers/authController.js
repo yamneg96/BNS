@@ -44,28 +44,31 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // 🔹 Constant admin (Yemlak) — always verified and active
-    if (email === "yamlaknegash96@gmail.com") {
-      const user = await User.create({
-        name: name || "Admin",
-        email,
-        password: hashedPassword,
-        phone,
-        role: "admin",
-        subscription: {
-          plan: plan || "yearly",
-          isActive: true,
-        },
-        isAccountVerified: true,
-      });
-
-      return res.status(201).json({
+     const adminEmails = [
+            "yamlaknegash96@gmail.com",
+            "ctemesgen85@gmail.com"
+        ];
+    
+       if (adminEmails.includes(email)) {
+         const user = await User.create({
+          name: name || "Admin",
+          email,
+          password: hashedPassword,
+          phone,
+          role: "admin",
+          subscription: {
+            plan: plan || "yearly",
+            isActive: true,
+           },
+          isAccountVerified: true,
+       });
+    
+       return res.status(201).json({
         email: user.email,
         role: user.role,
         message: "Admin account created successfully (auto-verified).",
-      });
-    }
-
+       });
+     }
     // 🔹 Intern users — active subscription, but must verify via OTP
     const otp = generateOtp();
     const otpExpire = Date.now() + 10 * 60 * 1000; // expires in 10 mins
