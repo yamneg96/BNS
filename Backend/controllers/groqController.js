@@ -27,7 +27,7 @@ const getLocalContext = async (complaint) => {
     }
 };
 
-export const predictDiagnosis = async (req, res) => {
+export const predictDiagnosisGROQ = async (req, res) => {
   try {
     const { chiefComplaint } = req.body;
 

@@ -1,148 +1,127 @@
-# 🏥 Bed Notification System (BNS) – Without HIS Integration
+# 🏥 Bed Notification System (BNS) + Clinical RAG AI
 
-A **MERN-stack web application** designed to provide **real-time bed notifications and dynamic assignments** in hospitals.  
-It helps **C1 students, C2 students, interns, and admins** stay updated with **bed responsibilities and patient admission/withdrawal events** using **RBAC (role-based access control)**, in-app notifications, and a lightweight admin panel.  
+A **MERN-stack web application** designed for real-time bed management and **AI-powered clinical decision support**. 
 
-Unlike bulky HIS/EHR systems, this project is **lightweight, mobile-first, and easy to deploy**.
+This project has evolved from a simple notification tool into a **Retrieval-Augmented Generation (RAG)** system. It allows hospital staff to leverage local medical guidelines (`.pdf`, `.docx`, `.txt`) to generate grounded diagnostic suggestions, ensuring AI advice is aligned with specific hospital protocols.
 
 ---
 
 ## ✨ Features
-- 🔑 **User Authentication** (Register/Login with JWT)  
-- 🛡 **Role-Based Access Control (RBAC)** (C1, C2, Intern, Admin)  
-- 🛏 **Bed Assignment** (users assign themselves to beds daily)  
-- 🔔 **Notification Panel** (Dept → Ward → Beds → Notify responsible person)  
-- ➕ **Patient Admitted / Patient Withdrawn** actions beside notifications  
-- 👤 **Profile Section** (“Hello [Name]” → profile with user info + bed assignments)  
-- 📊 **Admin Panel** (update actual beds, wards, available/rejected counts for all departments)  
-- 📱 **Mobile-First UI** with **TailwindCSS**  
+- 🧠 **Multi-Model AI RAG:** Diagnostic suggestions powered by **Google Gemini 2.0**, **Groq (Llama 3)**, and **OpenAI GPT-4o**.
+- 📂 **Local Knowledge Base:** Automated parsing of local protocols (e.g., `BNS_RAG_TRAIN.pdf`) to ground AI responses in actual clinical data.
+- 🛡 **Human-in-the-Loop:** A "Staging" UI where doctors review, **Accept**, or **Reject** AI suggestions before syncing to the patient registry.
+- 🔴 **Dynamic Risk Assessment:** Automated categorization of patient risk (Low, Medium, High) with color-coded UI alerts.
+- 🔑 **User Authentication:** Secure Login/Register with JWT.
+- 🛡 **Role-Based Access Control (RBAC):** Permissions for C1, C2, Interns, and Admins.
+- 🛏 **Bed Assignment:** Real-time self-assignment and patient admission/withdrawal tracking.
+- 📱 **Mobile-First UI:** Responsive design built with **Tailwind CSS**.
 
 ---
 
 ## 🖥 Tech Stack
 ### Frontend
-- ⚡ [React + Vite](https://vitejs.dev/)  
-- 🎨 [Tailwind CSS](https://tailwindcss.com/)  
-- 🌐 Axios for API calls  
-- 🔔 Service Worker (future push notifications)  
+- ⚡ [React + Vite](https://vitejs.dev/)
+- 🎨 [Tailwind CSS](https://tailwindcss.com/) + [Lucide Icons](https://lucide.dev/)
+- 🌐 Axios for API calls
+- 🔔 React-Hot-Toast for real-time status feedback
 
-### Backend
-- 🟢 [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)  
-- 🍃 [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/)  
-- 🔑 JWT + bcrypt for authentication & RBAC  
-- 📡 REST API for communication  
+### Backend (The RAG Engine)
+- 🟢 [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+- 🍃 [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/)
+- 🤖 **AI SDKs:** `@google/generative-ai`, `groq-sdk`, `openai`
+- 📄 **Document Parsers:** `pdf-parse`, `mammoth` (for DOCX support)
 
 ---
 
 ## 📂 Project Structure
 ```plaintext
 bed-notification-system/
-│── backend/                # Node.js + Express API
-│   ├── src/
-│   │   ├── config/         # DB connection
-│   │   ├── controllers/    # Business logic
-│   │   ├── middleware/     # Auth & RBAC
-│   │   ├── models/         # Mongoose schemas
-│   │   ├── routes/         # API endpoints
-│   │   └── server.js       # Entry point
+│── backend/ 
+│   ├── data/
+│   │   └── medical_kb/      # 📄 Local PDF/DOCX guidelines (The Knowledge Base)
+│   ├── src/
+│   │   ├── controllers/     # logic for Gemini, Groq, and GPT-4o
+│   │   ├── middleware/     # Auth & RBAC
+│   │   ├── models/         # Mongoose schemas (Bed, User, Patient)
+│   │   ├── routes/         # API endpoints including new /api/ai routes
 │
-│── frontend/               # React + Vite + Tailwind
-│   ├── src/
-│   │   ├── assets/         # Images, icons
-│   │   ├── components/     # Navbar, Cards, Modal, etc.
-│   │   ├── pages/          # Home, Dashboard, Assignments, Notifications, Profile, Admin
-│   │   ├── context/        # AuthContext
-│   │   └── services/       # Axios API calls (auth, beds, notifications, admin)
-│
-└── README.md
-````
+│── frontend/
+│   ├── src/
+│   │   ├── components/     # WardBedContainer (with AI Review logic)
+│   │   ├── services/       # aiService.js (Multi-provider routing)
+│   │   └── context/        # AuthContext
+🚀 AI Implementation (RAG)
+1. Retrieval Logic
+The system uses Simple RAG via keyword matching. When a "Chief Complaint" is entered, the backend:
 
----
+Reads the local medical files in /data/medical_kb/.
 
-## ⚙️ Installation & Setup
+Filters lines containing keywords from the complaint.
 
-### 1️⃣ Clone the repository
+Injects the top relevant excerpts into the AI prompt as "Reference Data."
 
-```bash
-git clone https://github.com/yamneg96/bed-notification-system.git
+2. Model Redundancy
+To bypass API rate limits and ensure 100% uptime, BNS supports three providers:
+
+Gemini 2.0: Primary clinical reasoning engine.
+
+Groq/Llama 3: High-speed backup engine.
+
+GPT-4o Mini: Stable fallback for structured JSON responses.
+
+⚙️ Installation & Setup
+1️⃣ Clone & Install
+Bash
+
+git clone [https://github.com/yamneg96/bed-notification-system.git](https://github.com/yamneg96/bed-notification-system.git)
 cd bed-notification-system
-```
+# Install backend deps
+cd backend && npm install
+# Install frontend deps
+cd ../frontend && npm install
+2️⃣ Environment Variables (backend/.env)
+Code snippet
 
-### 2️⃣ Backend Setup
-
-```bash
-cd backend
-npm install
-```
-
-Create a `.env` file:
-
-```env
-MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/bns
+MONGO_URI=your_mongodb_uri
 JWT_SECRET=supersecretkey
 PORT=5000
-```
 
-Run backend:
+# AI API Keys
+GEMINI_API_KEY=your_key
+GROQ_API_KEY=your_key
+OPENAI_API_KEY=your_key
+3️⃣ Run Development Servers
+Backend: npm run dev (Port 5000)
 
-```bash
-npm run dev
-```
+Frontend: npm run dev (Port 5173)
 
-### 3️⃣ Frontend Setup
+🚀 API Endpoints
+AI Service Routes
+POST /api/ai/gemini_predict → Grounded diagnosis via Google Gemini.
 
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
+POST /api/ai/groq_pedict → Fast diagnosis via Groq/Llama.
 
----
+POST /api/ai/gbt_predict → Structured diagnosis via OpenAI.
 
-## 🚀 API Endpoints
+Bed & Patient Routes
+POST /api/beds/assign → Assign beds to user.
 
-### Auth Routes
+POST /api/notifications/admit/:bedId → Admit patient.
 
-* `POST /api/auth/register` → Register user (role: C1, C2, Intern, Admin)
-* `POST /api/auth/login` → Login user & return JWT
-* `GET /api/auth/profile` → Get current user (protected)
+POST /api/notifications/withdraw/:bedId → Discharge patient.
 
-### Bed Routes
+📌 Roadmap
+✅ RAG Phase 1: Simple keyword-based context retrieval.
 
-* `POST /api/beds/assign` → Assign beds for the logged-in user
-* `GET /api/beds/my` → Get logged-in user’s bed assignments
+✅ Multi-AI Support: Gemini, Groq, and OpenAI integration.
 
-### Notification Routes
+🔄 RAG Phase 2 (Future): Semantic Vector Search (using Embeddings) to replace keyword matching.
 
-* `GET /api/notifications` → Get notifications
-* `POST /api/notifications/admit/:bedId` → Admit patient to a bed
-* `POST /api/notifications/withdraw/:bedId` → Withdraw patient from a bed
+🔄 Source Citations: Displaying exact PDF page/line numbers for every AI suggestion.
 
-### Admin Routes
+📱 Push Notifications: Implementation of Service Workers for mobile alerts.
 
-* `GET /api/admin/stats` → Get system-wide stats (beds, wards, available, rejected)
-* `POST /api/admin/update` → Update system-wide data
+📜 License
+MIT License © 2026.
 
----
-
-## 🧪 Testing
-
-Use **Postman** or **curl** to test API endpoints. Example:
-
----
-
-## 📌 Roadmap
-
-* ✅ Authentication + RBAC (C1, C2, Intern, Admin)
-* ✅ Bed assignment & notifications
-* ✅ Patient admitted/withdrawn actions
-* ✅ Push notification service worker
-* ✅ Shift expiry automation
-* ✅ Advanced analytics dashboards
-
----
-
-## 📜 License
-
-MIT License © 2025.
-Developed for real-time hospital communication efficiency.
+Optimizing clinical workflows through intelligent automation.

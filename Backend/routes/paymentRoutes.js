@@ -1,7 +1,10 @@
 import express from "express";
 import { 
+  aiPaymentCallback,
+  initiateAIPayment,
   initiatePayment, 
   paymentCallback, 
+  uploadAIScreenshot, 
   uploadPaymentScreenshot, 
   verifyPayment 
 } from "../controllers/paymentController.js";
@@ -21,5 +24,17 @@ router.post("/callback", paymentCallback);
 
 // GET → verify payment by tx_ref
 router.get("/verify/:tx_ref", verifyPayment);
+
+
+// AI Specific Payment Routes
+router.post("/ai/initiate", initiateAIPayment);
+// Example backend route
+router.post(
+  "/ai/upload-screenshot", 
+  protect, 
+  upload.single("screenshot"), // <--- Ensure this matches 'screenshot'
+  uploadAIScreenshot
+);
+router.post("/ai-callback", aiPaymentCallback);
 
 export default router;

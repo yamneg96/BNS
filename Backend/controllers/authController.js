@@ -314,7 +314,7 @@ export const getProfile = async (req, res) => {
       id: user._id,
       isAccountVerified: user.isAccountVerified,
       image:user.image,
-      
+      aiAccess: user.aiAccess,
     });
    
   } catch (err) {
