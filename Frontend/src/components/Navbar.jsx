@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import bedIcon from "../assets/medical-bed.png";
 import { X, Menu, LogOut, User, ShieldAlert, CheckCircle } from 'lucide-react';
@@ -11,6 +11,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const location = useLocation();
+  console.log(location.pathname)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -80,11 +82,11 @@ const Navbar = () => {
                 </>
               ) : (
                 <div className="flex items-center space-x-6">
-                  <Link to="/about" className="text-sm font-bold text-slate-300 hover:text-white transition-colors">About System</Link>
-                  <Link to="/register" className="text-sm font-bold text-slate-300 hover:text-white transition-colors">Register</Link>
+                  <Link to="/about" className={location.pathname === '/about' ? 'hidden' : 'text-sm font-bold text-slate-300 hover:text-white transition-colors'}>About System</Link>
+                  <Link to="/register" className={location.pathname === '/register' ? 'hidden' : 'text-sm font-bold text-slate-300 hover:text-white transition-colors'}>Register</Link>
                   <Link 
                     to="/login" 
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+                    className={location.pathname === '/login' ? 'hidden' : 'bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/20 transition-all active:scale-95'}
                   >
                     Login
                   </Link>
@@ -133,9 +135,9 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="flex flex-col space-y-4">
-                <Link to="/login" onClick={toggleMenu} className="cp p-4 bg-indigo-600 text-center rounded-2xl font-bold">Login</Link>
-                <Link to="/register" onClick={toggleMenu} className="cp p-4 bg-slate-800 text-center rounded-2xl font-bold">Register</Link>
-                <Link to="/about" onClick={toggleMenu} className="cp p-4 bg-slate-800 text-center rounded-2xl font-bold">About Us</Link>
+                <Link to="/login" onClick={toggleMenu} className={location.pathname === '/login' ? 'hidden' : 'cp p-4 bg-indigo-600 text-center rounded-2xl font-bold'}>Login</Link>
+                <Link to="/register" onClick={toggleMenu} className={location.pathname === '/register' ? 'hidden' : 'cp p-4 bg-slate-800 text-center rounded-2xl font-bold'}>Register</Link>
+                <Link to="/about" onClick={toggleMenu} className={location.pathname === '/about' ? 'hidden' : 'cp p-4 bg-slate-800 text-center rounded-2xl font-bold'}>About Us</Link>
               </div>
             )}
           </div>
