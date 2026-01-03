@@ -1,4 +1,5 @@
 import { FaYoutube, FaInstagram, FaTelegramPlane } from 'react-icons/fa';
+import { ShieldCheck, Activity, LifeBuoy, Info } from 'lucide-react';
 import PrivacyModal from "../components/PrivacyModal";
 import { useState } from 'react';
 import bedIcon from '../assets/medical-bed.png';
@@ -14,89 +15,98 @@ const Footer = () => {
         {/* Main Content Row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           
-          {/* Copyright & Product Info */}
-          <div className="flex items-center gap-4">
-            <div className="bg-white/5 p-2 rounded-xl border border-white/10">
-              <img src={bedIcon} alt="Bed Icon" className="h-7 w-auto" />
+          {/* Copyright & Institutional Info */}
+          <div className="flex items-center gap-5">
+            <div className="bg-indigo-500/20 p-2 rounded-xl group-hover:bg-indigo-500/30 transition-colors">
+              <img src={bedIcon} alt="Medical Bed Icon" className="h-8 w-auto" />
             </div>
             <div className="text-left">
-              <p className="text-white font-black tracking-tight leading-none mb-1">BNS</p>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
-                &copy; {new Date().getFullYear()} Bed Notification System
-              </p>
+              <p className="text-white font-black tracking-tighter text-xl leading-none mb-1 italic">BNS</p>
+              <div className="flex items-center gap-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                  &copy; {new Date().getFullYear()} Clinical Registry System
+                </p>
+                <div className="h-1 w-1 bg-indigo-500 rounded-full animate-pulse" />
+              </div>
             </div>
           </div>
 
-          {/* Social Media Links */}
+          {/* Social Media / Dev Connections */}
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Connect with NYDev</span>
+            <div className="flex flex-col items-center sm:items-end">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-1">Developer Network</span>
+                <Link to={'https://nydevofficial.vercel.app'} className="text-[10px] font-bold text-slate-500">NYDev Official Connectivity</Link>
+            </div>
             
             <div className="flex items-center gap-5">
               <a
                 href="https://www.youtube.com/@NYDev-t6p"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cp text-slate-400 hover:text-red-500 transition-all duration-300 transform hover:scale-125"
+                className="p-2 bg-white/5 rounded-lg text-slate-400 hover:text-white hover:bg-red-600 transition-all duration-300"
                 aria-label="YouTube"
               >
-                <FaYoutube size={22} />
+                <FaYoutube size={18} />
               </a>
               
               <a
                 href="https://instagram.com/nydevofficial"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cp text-slate-400 hover:text-pink-500 transition-all duration-300 transform hover:scale-125"
+                className="p-2 bg-white/5 rounded-lg text-slate-400 hover:text-white hover:bg-indigo-600 transition-all duration-300"
                 aria-label="Instagram"
               >
-                <FaInstagram size={22} />
+                <FaInstagram size={18} />
               </a>
               
               <a
                 href="https://t.me/+a4391kX-fU9hYjA0"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cp text-slate-400 hover:text-indigo-400 transition-all duration-300 transform hover:scale-125"
+                className="p-2 bg-white/5 rounded-lg text-slate-400 hover:text-white hover:bg-sky-600 transition-all duration-300"
                 aria-label="Telegram"
               >
-                <FaTelegramPlane size={22} />
+                <FaTelegramPlane size={18} />
               </a>
             </div>
           </div>
         </div>
         
-        {/* Bottom Links Area */}
-        <div className="mt-10 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-center items-center gap-8">
+        {/* Navigation & Compliance Links */}
+        <div className="mt-10 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-center items-center gap-10">
             <button 
               onClick={() => setShowModal(true)} 
-              className="cp text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors"
+              className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-300 transition-colors"
             >
-              Privacy Policy
+              <ShieldCheck size={14} className="text-slate-600 group-hover:text-indigo-400" />
+              Privacy Protocol
             </button>
-            
-            <div className="hidden sm:block h-1 w-1 bg-slate-700 rounded-full" />
             
             <Link 
               to="/support" 
-              className="cp text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-400 transition-colors"
+              className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-300 transition-colors"
             >
-              Support Center
+              <LifeBuoy size={14} className="text-slate-600 group-hover:text-indigo-400" />
+              Support Registry
             </Link>
-
-            <div className="hidden sm:block h-1 w-1 bg-slate-700 rounded-full" />
 
             <Link 
               to="/about" 
-              className="cp text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-400 transition-colors"
+              className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-300 transition-colors"
             >
-              About Project
+              <Info size={14} className="text-slate-600 group-hover:text-indigo-400" />
+              System Details
             </Link>
         </div>
 
-        <div className="mt-8 text-center">
-           <p className="text-[9px] font-bold text-slate-700 uppercase tracking-[0.4em]">
-              Precision Built • HIPAA Compliant • Real-time
-           </p>
+        {/* Clinical Footer Badge */}
+        <div className="mt-10 text-center">
+           <div className="inline-flex items-center gap-3 px-6 py-2 bg-black/20 rounded-full border border-white/5">
+             <Activity size={12} className="text-indigo-500 animate-pulse" />
+             <p className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.4em]">
+               Precision Managed • HIPAA Aligned • Real-time Monitoring
+             </p>
+           </div>
         </div>
       </div>
 
