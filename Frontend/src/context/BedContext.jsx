@@ -6,6 +6,7 @@ import {
 } from "../services/bed";
 import { toast } from "react-hot-toast";
 import { useAuth } from "./AuthContext";
+import { sendPatientInfo } from "../services/department";
 
 const BedContext = createContext();
 
@@ -71,6 +72,21 @@ export const BedProvider = ({ children }) => {
     }
   };
 
+  const recordPatientInfo = async (info) => {
+    try {
+      const res = await sendPatientInfo(info);
+      if (res) {
+        toast.success(res.message);
+      } else {
+        toast.success(res.message || "Discharge handled");
+      }
+      loadDepartments();
+      window.location.reload();
+    } catch (err) {
+      handleError(err)
+    }
+  };
+
 
   return (
     <BedContext.Provider
@@ -80,6 +96,7 @@ export const BedProvider = ({ children }) => {
         admit,
         discharge,
         loadDepartments,
+        recordPatientInfo,
       }}
     >
       {children}

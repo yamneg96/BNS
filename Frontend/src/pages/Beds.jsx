@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Menu, X, Hospital, Building2, LayoutGrid, Search } from "lucide-react";
+import { Hospital, Building2, LayoutGrid, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useBed } from "../context/BedContext";
 import GoBack from '../components/GoBack';
@@ -8,7 +8,8 @@ import WardBedContainer from "../components/WardBedContainer";
 
 const Beds = () => {
   const { user } = useAuth();
-  const { departments, loading, admit, discharge } = useBed();
+  // recordPatientInfo is pulled from your BedContext
+  const { departments, loading, admit, discharge, recordPatientInfo } = useBed();
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,18 +17,45 @@ const Beds = () => {
   const [patientData, setPatientData] = useState({});
   const [transferData, setTransferData] = useState({});
 
-  if (loading) return <div className="p-20 text-center animate-pulse text-slate-500 font-medium">Accessing Hospital Registry...</div>;
+  if (loading) return <div className="p-20 text-center animate-pulse text-slate-500 font-medium tracking-widest uppercase">Accessing Hospital Registry...</div>;
 
   const currentDepartment = selectedDepartment || (departments.length > 0 ? departments[0] : null);
 
+  // Logic to handle both flat fields (name) and nested fields (prediction.diagnosis)
+  const handlePatientDataChange = (bedId, field, val) => {
+    setPatientData(prev => {
+      const currentBedData = prev[bedId] || {};
+      
+      if (field === 'prediction') {
+        return {
+          ...prev,
+          [bedId]: {
+            ...currentBedData,
+            prediction: {
+              ...(currentBedData.prediction || {}),
+              ...val 
+            }
+          }
+        };
+      }
+
+      return {
+        ...prev,
+        [bedId]: {
+          ...currentBedData,
+          [field]: val
+        }
+      };
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col relative pb-24">
-      {/* 1. Header Area */}
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col relative pb-24 font-sans">
       <div className="p-6 md:p-10 max-w-[1600px] mx-auto w-full">
         <div className="flex justify-between items-center mb-10">
           <GoBack />
           <div className="hidden md:block">
-             <p className="text-right text-xs font-bold text-slate-400 uppercase tracking-widest">Medical Management System</p>
+             <p className="text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Clinical Operations</p>
              <p className="text-right text-sm font-bold text-indigo-600 uppercase italic">Ward Live Feed</p>
           </div>
         </div>
@@ -43,7 +71,6 @@ const Beds = () => {
               </h1>
             </div>
 
-            {/* Vertical Wards Layout */}
             <div className="flex flex-col gap-10">
               {currentDepartment.wards
                 .filter(ward => ward.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -55,17 +82,17 @@ const Beds = () => {
                     <div className="h-[1px] flex-1 bg-slate-200" />
                   </div>
                   
-                  {/* Horizontal Scrollable Beds Container */}
                   <WardBedContainer 
                     ward={ward} 
                     deptId={currentDepartment._id} 
                     departments={departments}
                     patientData={patientData}
                     transferData={transferData}
-                    onPatientChange={(bedId, field, val) => setPatientData(prev => ({...prev, [bedId]: {...prev[bedId], [field]: val}}))}
+                    onPatientChange={handlePatientDataChange}
                     onTransferChange={(bedId, field, val) => setTransferData(prev => ({...prev, [bedId]: {...prev[bedId], [field]: val}}))}
                     onAdmit={admit}
                     onDischarge={discharge}
+                    onSaveInfo={recordPatientInfo}
                     user={user}
                   />
                 </div>
@@ -75,22 +102,22 @@ const Beds = () => {
         )}
       </div>
 
-      {/* 2. Floating Action Button (Bottom Left) */}
+      {/* Navigation FAB */}
       <button 
         onClick={() => setIsModalOpen(true)}
         className="fixed bottom-8 left-8 z-50 flex items-center gap-3 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95 group"
       >
         <LayoutGrid size={20} className="group-hover:rotate-90 transition-transform" />
-        <span className="font-bold text-sm uppercase tracking-widest">Departments</span>
+        <span className="font-bold text-sm uppercase tracking-widest">Units</span>
       </button>
 
-      {/* 3. Department Selection Modal */}
+      {/* Department Selector Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <div className="relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-2xl font-black text-slate-900 italic uppercase">Select Unit</h2>
+              <h2 className="text-2xl font-black text-slate-900 italic uppercase">Hospital Map</h2>
               <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                 <X size={24} className="text-slate-400" />
               </button>
