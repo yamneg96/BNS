@@ -108,7 +108,7 @@ const Beds = () => {
         className="fixed bottom-8 left-8 z-50 flex items-center gap-3 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95 group"
       >
         <LayoutGrid size={20} className="group-hover:rotate-90 transition-transform" />
-        <span className="font-bold text-sm uppercase tracking-widest">Units</span>
+        <span className="font-bold text-sm uppercase tracking-widest">Departments</span>
       </button>
 
       {/* Department Selector Modal */}
