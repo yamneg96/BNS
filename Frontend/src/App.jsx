@@ -53,7 +53,7 @@ function App() {
                   <Analytics />
                   <Navbar />
                   
-                  <main className="flex-grow text-center scrollbar-hide">
+                  <main className="w-screen flex-grow text-center scrollbar-hide">
                     <Routes>
                       {/* --- 1. PUBLIC ROUTES (Always Accessible) --- */}
                       <Route path="/" element={<Home />} />

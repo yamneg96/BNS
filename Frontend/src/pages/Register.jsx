@@ -58,11 +58,11 @@ const Register = () => {
     <div className="min-h-screen w-full bg-white font-sans flex flex-col lg:flex-row">
       
       {/* Left Side: Visual Branding - Fixed height on desktop to match viewport */}
-      <div className="hidden lg:relative lg:flex lg:w-5/12 sticky top-0 h-screen">
+      <div className="hidden lg:relative lg:flex lg:w-5/12 sticky top-0 max-h">
         <img
           src={homeImage}
           alt="Medical background"
-          className="absolute inset-0 w-full h-screen object-cover"
+          className="absolute inset-0 w-full max-h object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900/80 to-indigo-900/40" />
         
@@ -89,8 +89,8 @@ const Register = () => {
       <div className="w-full lg:w-7/12 flex items-start justify-center bg-white p-6 sm:p-12 lg:p-20 overflow-y-visible">
         <div className="w-full max-w-2xl space-y-8 pt-4 pb-12">
           {/* University Badge */}
-          <div onClick={() => navigate("/choice")} className="cp inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white mb-6" aria-label="Choose University">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em]">{university} University</span>
+          <div onClick={() => navigate("/choice")} className="cp inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black hover:bg-indigo-500 text-white mb-6" aria-label="Choose University">
+            <span className="text-[9px] font-black uppercase">{university} University</span>
           </div>            
           
           <div className="text-center lg:text-left space-y-2">

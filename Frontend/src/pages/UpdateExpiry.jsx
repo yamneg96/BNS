@@ -95,7 +95,7 @@ const UpdateExpiry = () => {
   const selectedDept = departments.find((d) => d._id === form.deptId);
   const selectedWard = selectedDept?.wards.find((w) => w.name === form.wardName);
   const bedsToDisplay = selectedWard
-    ? selectedWard.beds.filter((bed) => !bed.assignedUser)
+    ? selectedWard.beds //updated so that selected beds bu others are also shown.
     : [];
 
   // --- Dates ---
