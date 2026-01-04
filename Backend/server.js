@@ -17,14 +17,14 @@ import supportRoutes from './routes/supportRoutes.js'
 import aiRoutes from './routes/aiRoutes.js'
 
 dotenv.config();
-// Load env early but do NOT connect DB here when used as a serverless handler
-// connectDB will be invoked explicitly when needed (see api/backend.js)
+connectDB();
 
 const app = express();
 app.use(express.json());
 
-// Cron jobs should not run inside serverless function invocations.
-// We'll start them only when running as a standalone server (see startServer()).
+//  Start the cron job
+startExpiryJob();
+startSubscriptionNotificationJob();
 
 const allowedOrigins = [
   "http://localhost:5173",          // local dev
@@ -65,23 +65,4 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process?.env?.PORT || 5000;
-
-export default app;
-
-export const startServer = async () => {
-  try {
-    await connectDB();
-    // Start cron jobs only for the long-running server
-    startExpiryJob();
-    startSubscriptionNotificationJob();
-
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  } catch (err) {
-    console.error("Failed to start server:", err?.message || err);
-  }
-};
-
-// If invoked directly (node server.js) or explicitly requested, start the server
-if (process.env.STANDALONE === "true" || process.env.NODE_ENV === "development") {
-  startServer();
-}
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

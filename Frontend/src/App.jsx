@@ -77,7 +77,6 @@ function App() {
                         <Route path="/universities" element={<SelectUniversity />} />
                         <Route path="/schools" element={<SelectSchool />} />
                         <Route path="/notifications" element={<Notifications />} />
-                        <Route path="/assignments" element={<Assignments />} />
                         <Route path="/myassignments" element={<MyAssignments />} />
 
                         {/* Management */}

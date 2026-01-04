@@ -30,7 +30,7 @@ const Navbar = () => {
             
             {/* Logo Section */}
             <Link 
-              to={user && user?.subscription?.isActive ? "/dashboard" : "/"} 
+              to={user ? "/dashboard" : "/"} 
               className="flex items-center space-x-3 group transition-transform active:scale-95"
             >
               <div className="bg-indigo-500/20 p-2 rounded-xl group-hover:bg-indigo-500/30 transition-colors">
@@ -41,7 +41,7 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              {user && user?.subscription?.isActive ? (
+              {user ? (
                 <>
                   <div className="flex items-center space-x-6">
                     <Link to="/dashboard" className="cp text-sm font-bold text-slate-300 hover:text-indigo-400 transition-colors">Dashboard</Link>
@@ -108,7 +108,7 @@ const Navbar = () => {
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
           <div className="md:hidden bg-slate-900 border-t border-white/10 p-6 space-y-4 animate-in slide-in-from-top-5 duration-300">
-            {user && user?.subscription?.isActive ? (
+            {user ? (
               <div className="flex flex-col space-y-4">
                     <button 
                       onClick={() => {setIsMenuOpen(false); setIsProfileModalOpen(true)}}

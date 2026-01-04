@@ -10,8 +10,9 @@ import {
   FaHospital, 
   FaHourglassEnd, 
   FaCheckCircle,
-  FaArrowRight 
+  FaArrowRight
 } from 'react-icons/fa'; 
+import { Lock } from 'lucide-react';
 import { addBedsToAssignment, removeBedsFromAssignment } from '../services/assignment'; 
 import toast from 'react-hot-toast';                        
 import { useBed } from '../context/BedContext'; 
@@ -108,7 +109,27 @@ const MyAssignments = () => {
       setRemovingBedId(null);
     }
   };
-
+  if (!user?.subscription?.isActive) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white p-8 rounded-[3rem] shadow-2xl text-center border-2 border-slate-100">
+           <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <Lock size={40} />
+           </div>
+           <h2 className="text-2xl font-black text-slate-900 uppercase italic">Access Denied</h2>
+           <p className="text-slate-500 text-sm mt-3 mb-8 font-bold">
+             You need an active Platform Subscription to access the My Assignments Live Feed.
+           </p>
+           <button 
+             onClick={() => window.location.href = '/screenshot'} 
+             className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest"
+           >
+             Upgrade Plan
+           </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className='bg-slate-50/50 min-h-screen pt-28 pb-20 px-6 font-sans'>
       <div className='max-w-6xl mx-auto'>

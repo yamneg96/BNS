@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NotificationCard from "../components/NotificationCard";
 import GoBack from "../components/GoBack";
-import { Bell, Activity, ShieldAlert, Timer } from "lucide-react";
+import { Bell, Activity, ShieldAlert, Timer, Lock } from "lucide-react";
 import { getNotifications } from "../services/notification";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
@@ -62,6 +62,28 @@ if (loading) {
           <div className="w-full bg-slate-50 h-1.5 rounded-full mt-8 overflow-hidden">
             <div className="bg-indigo-600 h-full w-1/3 rounded-full animate-[loading_2s_ease-in-out_infinite]"></div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user?.subscription?.isActive) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white p-8 rounded-[3rem] shadow-2xl text-center border-2 border-slate-100">
+           <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <Lock size={40} />
+           </div>
+           <h2 className="text-2xl font-black text-slate-900 uppercase italic">Access Denied</h2>
+           <p className="text-slate-500 text-sm mt-3 mb-8 font-bold">
+             You need an active Platform Subscription to access the Notificatioin Live Feed.
+           </p>
+           <button 
+             onClick={() => window.location.href = '/screenshot'} 
+             className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest"
+           >
+             Upgrade Plan
+           </button>
         </div>
       </div>
     );

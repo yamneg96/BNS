@@ -252,7 +252,7 @@ export const loginUser = async (req, res) => {
       email: user.email,
       role: user.role,
       image: user.image,
-      susbscription: user.subscription,
+      susbscription: user.subscription.isActive,
       token: generateToken(user.id, user.role),
     });
   } catch (err) {
