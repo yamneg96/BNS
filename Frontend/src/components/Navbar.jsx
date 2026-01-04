@@ -12,7 +12,6 @@ const Navbar = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const location = useLocation();
-  console.log(location.pathname)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 

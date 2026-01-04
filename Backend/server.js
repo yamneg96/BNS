@@ -14,6 +14,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import supervisorRoutes from "./routes/supervisorRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js"
 import supportRoutes from './routes/supportRoutes.js'
+import aiRoutes from './routes/aiRoutes.js'
 
 dotenv.config();
 connectDB();
@@ -55,6 +56,7 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/notifications", notificationRoutes)
+app.use("/api/ai", aiRoutes)
 
 app.use("/api/support", supportRoutes);
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Hospital, Building2, LayoutGrid, X } from "lucide-react";
+import { Hospital, Building2, LayoutGrid, X, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useBed } from "../context/BedContext";
 import GoBack from '../components/GoBack';
@@ -8,7 +8,6 @@ import WardBedContainer from "../components/WardBedContainer";
 
 const Beds = () => {
   const { user } = useAuth();
-  // recordPatientInfo is pulled from your BedContext
   const { departments, loading, admit, discharge, recordPatientInfo } = useBed();
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,9 +18,31 @@ const Beds = () => {
 
   if (loading) return <div className="p-20 text-center animate-pulse text-slate-500 font-medium tracking-widest uppercase">Accessing Hospital Registry...</div>;
 
+  // --- PLATFORM SUBSCRIPTION GATE ---
+  if (!user?.subscription?.isActive) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white p-8 rounded-[3rem] shadow-2xl text-center border-2 border-slate-100">
+           <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <Lock size={40} />
+           </div>
+           <h2 className="text-2xl font-black text-slate-900 uppercase italic">Access Denied</h2>
+           <p className="text-slate-500 text-sm mt-3 mb-8 font-bold">
+             You need an active Platform Subscription to access the Ward Live Feed.
+           </p>
+           <button 
+             onClick={() => window.location.href = '/screenshot'} 
+             className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest"
+           >
+             Upgrade Plan
+           </button>
+        </div>
+      </div>
+    );
+  }
+
   const currentDepartment = selectedDepartment || (departments.length > 0 ? departments[0] : null);
 
-  // Logic to handle both flat fields (name) and nested fields (prediction.diagnosis)
   const handlePatientDataChange = (bedId, field, val) => {
     setPatientData(prev => {
       const currentBedData = prev[bedId] || {};
@@ -55,8 +76,8 @@ const Beds = () => {
         <div className="flex justify-between items-center mb-10">
           <GoBack />
           <div className="hidden md:block">
-             <p className="text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Clinical Operations</p>
-             <p className="text-right text-sm font-bold text-indigo-600 uppercase italic">Ward Live Feed</p>
+              <p className="text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Clinical Operations</p>
+              <p className="text-right text-sm font-bold text-indigo-600 uppercase italic">Ward Live Feed</p>
           </div>
         </div>
         
@@ -102,16 +123,14 @@ const Beds = () => {
         )}
       </div>
 
-      {/* Navigation FAB */}
       <button 
         onClick={() => setIsModalOpen(true)}
         className="fixed bottom-8 left-8 z-50 flex items-center gap-3 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95 group"
       >
         <LayoutGrid size={20} className="group-hover:rotate-90 transition-transform" />
-        <span className="font-bold text-sm uppercase tracking-widest">Units</span>
+        <span className="font-bold text-sm uppercase tracking-widest">Departments</span>
       </button>
 
-      {/* Department Selector Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
