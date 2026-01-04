@@ -7,24 +7,45 @@ dotenv.config();
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Simple RAG helper: Reads local knowledge base
+// Simple RAG helper: Reads local knowledge base (supports PDF/text)
 const getLocalContext = async (complaint) => {
-    try {
-        const filePath = path.join(process.cwd(), 'data', 'medical_kb', 'BNS_RAG_TRAIN.pdf');
-        const data = await fs.readFile(filePath, 'utf-8');
-        
-        // Find lines that share keywords with the complaint
-        const lines = data.split('\n');
-        const keywords = complaint.toLowerCase().split(' ');
-        const relevantLines = lines.filter(line => 
-            keywords.some(word => word.length > 3 && line.toLowerCase().includes(word))
-        );
+  try {
+    const kbDir = path.join(process.cwd(), 'data', 'medical_kb');
+    const files = await fs.readdir(kbDir);
+    const targetFile = files.find(f => f.startsWith('BNS_RAG_TRAIN'));
+    if (!targetFile) return "";
 
-        return relevantLines.slice(0, 5).join('\n'); 
-    } catch (error) {
-        console.error("Context Retrieval Error:", error);
-        return "";
+    const filePath = path.join(kbDir, targetFile);
+    const extension = path.extname(targetFile).toLowerCase();
+    let fullText = "";
+
+    if (extension === '.pdf') {
+      // dynamic import of pdf-parse (works in ESM and serverless)
+      try {
+        const pdf = (await import('pdf-parse')).default;
+        const buffer = await fs.readFile(filePath);
+        const data = await pdf(buffer);
+        fullText = data.text || '';
+      } catch (err) {
+        console.error('PDF parse failed:', err?.message || err);
+        fullText = '';
+      }
+    } else {
+      // read as utf-8 text for .txt or other text formats
+      fullText = await fs.readFile(filePath, 'utf-8');
     }
+
+    const lines = fullText.split('\n');
+    const keywords = complaint.toLowerCase().split(' ');
+    const relevantLines = lines.filter(line => 
+      keywords.some(word => word.length > 3 && line.toLowerCase().includes(word))
+    );
+
+    return relevantLines.slice(0, 5).join('\n');
+  } catch (error) {
+    console.error("Context Retrieval Error:", error);
+    return "";
+  }
 };
 
 export const predictDiagnosisGROQ = async (req, res) => {

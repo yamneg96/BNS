@@ -602,21 +602,34 @@ export const sendGlobalNotification = async (req, res) => {
       return res.status(400).json({ error: "Subject and message are required." });
     }
 
-    // Fetch all users
-    const users = await User.find({}, "email"); // only get emails
+    // Fetch all users (emails only)
+    const users = await User.find({}, "email");
     if (!users || users.length === 0) {
       return res.status(404).json({ error: "No users found to notify." });
     }
 
-    // Send emails one by one (safe)
-    for (const user of users) {
-      await sendEmailToUser(user.email, subject, message);
+    // Send in controlled batches to avoid long-running single function timeouts
+    const BATCH_SIZE = 25; // adjustable
+    const batches = [];
+    for (let i = 0; i < users.length; i += BATCH_SIZE) {
+      batches.push(users.slice(i, i + BATCH_SIZE));
+    }
+
+    let sent = 0;
+    for (const batch of batches) {
+      // fire off the batch concurrently and wait for them to settle
+      const promises = batch.map(u => sendEmailToUser(u.email, subject, message));
+      const results = await Promise.allSettled(promises);
+      sent += results.filter(r => r.status === 'fulfilled').length;
+      // small pause between batches (optional) — keep short to avoid function hanging
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
 
     res.status(200).json({
       success: true,
-      message: "Notification sent to all users successfully.",
+      message: "Notification dispatch started (batched).",
       totalRecipients: users.length,
+      sent,
     });
   } catch (error) {
     console.error("❌ Error sending global notification:", error);
