@@ -3,7 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
 const API = axios.create({
-  baseURL: 'https://bnst-ao5j.vercel.app/api',
+  // baseURL: 'https://bnst-ao5j.vercel.app/api',
+  baseURL: 'https://bnst-ao5j-git-main-yamneg96s-projects.vercel.app/api',
   // baseURL: 'http://localhost:5000/api',
   withCredentials: true,
 });

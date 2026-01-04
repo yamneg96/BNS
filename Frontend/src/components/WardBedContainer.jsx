@@ -87,13 +87,13 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {ward.beds.map((bed) => {
-          const currentName = patientData?.name ?? bed.patient?.name ?? "";
-          const currentAge = patientData?.age ?? bed.patient?.age ?? "";
-          const currentSex = patientData?.sex ?? bed.patient?.sex ?? "";
-          const currentComplaint = patientData?.chiefComplaint ?? bed.patient?.chiefComplaint ?? "";
+          const currentName = patientData[bed.id]?.name ?? bed.patient?.name ?? "";
+          const currentAge = patientData[bed.id]?.age ?? bed.patient?.age ?? "";
+          const currentSex = patientData[bed.id]?.sex ?? bed.patient?.sex ?? "";
+          const currentComplaint = patientData[bed.id]?.chiefComplaint ?? bed.patient?.chiefComplaint ?? "";
           
-          const currentDiagnosis = patientData?.prediction?.diagnosis ?? bed.patient?.prediction?.diagnosis ?? "";
-          const currentRiskLevel = patientData?.prediction?.riskLevel ?? bed.patient?.prediction?.riskLevel ?? "";
+          const currentDiagnosis = patientData[bed.id]?.prediction?.diagnosis ?? bed.patient?.prediction?.diagnosis ?? "";
+          const currentRiskLevel = patientData[bed.id]?.prediction?.riskLevel ?? bed.patient?.prediction?.riskLevel ?? "";
 
           const pendingAI = tempPrediction[bed.id];
 
@@ -173,8 +173,8 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                         if(!user.aiAccess?.isActive) {
                             return toast.error("AI Premium subscription is needed to see names.");
                         }
-                        setSee(true);
-                        toast.success("Assigned's User name is VISIBLE now.");
+                        setSee(!see);
+                        toast.success(see ? "Assigned's User name is HIDDEN now" : "Assigned's User name is VISIBLE now.");
                     }} 
                     className="cp border-b-2 text-[10px] font-black text-slate-900 uppercase italic cursor-pointer flex items-center gap-1"
                     >
@@ -237,13 +237,13 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                     <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide">
                       {user?.aiAccess?.isActive === true ? (
                         <>
-                          <button 
+{/**                          <button 
                             type="button"
                             onClick={() => handleAIPrediction(bed.id, currentComplaint, 'gemini')}
                             className="flex-1 whitespace-nowrap text-[8px] bg-blue-600 text-white px-2 py-1.5 rounded-lg font-black hover:bg-blue-700 transition-all flex items-center justify-center gap-1 shadow-sm"
                           >
                             <Sparkles size={10} /> GEMINI
-                          </button>
+                          </button> */}
                           <button 
                             type="button"
                             onClick={() => handleAIPrediction(bed.id, currentComplaint, 'groq')}
@@ -326,6 +326,7 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                     const patient = patientData[bed.id];
                     if (!patient?.name?.trim()) return toast.error("Name is required");
                     onSaveInfo({ deptId, wardName: ward.name, bedId: bed.id, patient: patient });
+                    toast.success("Patient Information Saved.")
                   }}
                 >
                   <Save size={14} /> Save Patient Info
