@@ -56,7 +56,7 @@ const Login = () => {
       navigate("/dashboard");
       // navigate("/universities") After successfully finished.
     } catch (err) {
-      setError(err.response.data.message || "Login failed");
+      setError(err || "Login failed");
     } finally {
       setIsLoading(false);
     }
