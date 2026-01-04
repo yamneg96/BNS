@@ -210,8 +210,8 @@ export const initiateAIPayment = async (req, res) => {
         currency: "ETB",
         email: user.email,
         tx_ref: `ai-tx-${Date.now()}`,
-        callback_url: `${process.env.BACKEND_URL}/api/payment/ai-callback`,
-        return_url: `${process.env.FRONTEND_URL}/payment/ai-success`,
+        callback_url: `${process.env.BACKEND_URL1}/api/payment/ai-callback`,
+        return_url: `${process.env.FRONTEND_URL1}/payment/ai-success`,
       },
       {
         headers: { Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}` }
