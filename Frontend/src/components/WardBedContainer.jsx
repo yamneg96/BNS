@@ -244,20 +244,20 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                           >
                             <Sparkles size={10} /> GEMINI
                           </button> */}
-                          <button 
+                           <button 
                             type="button"
                             onClick={() => handleAIPrediction(bed.id, currentComplaint, 'groq')}
-                            className="flex-1 whitespace-nowrap text-[8px] bg-orange-600 text-white px-2 py-1.5 rounded-lg font-black hover:bg-orange-700 transition-all flex items-center justify-center gap-1 shadow-sm"
+                            className="flex-1 whitespace-nowrap text-[8px] bg-orange-600 text-white p-2 rounded-lg font-black hover:bg-orange-700 transition-all flex items-center justify-center gap-1 shadow-sm"
                           >
-                            <Sparkles size={10} /> GROQ
+                            <Sparkles size={10} /> AI Predict
                           </button>
-                          <button 
+                          {/**<button 
                             type="button"
                             onClick={() => handleAIPrediction(bed.id, currentComplaint, 'gbt')}
                             className="flex-1 whitespace-nowrap text-[8px] bg-emerald-600 text-white px-2 py-1.5 rounded-lg font-black hover:bg-emerald-700 transition-all flex items-center justify-center gap-1 shadow-sm"
                           >
                             <Sparkles size={10} /> GPT-4
-                          </button>
+                          </button>*/}
                         </>
                       ) : (
                         <div className="w-full py-2 bg-slate-50 border border-dashed border-slate-200 rounded-lg text-center">
