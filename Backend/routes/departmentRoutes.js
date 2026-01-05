@@ -8,6 +8,7 @@ import {
   recordPatientInBed,
   getBedPatient,
   getBedPatientHistory,
+  updatePatientInBed,
 } from "../controllers/departmentController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -22,5 +23,6 @@ router.get("/department/:deptId/wards/:wardName/beds/:bedId/patient/history", pr
 router.post("/admit", protect, admitPatient);
 router.post("/patient", protect, recordPatientInBed);
 router.post("/discharge", protect, dischargePatient);
+router.put("/update-patient", protect, updatePatientInBed);
 
 export default router;
