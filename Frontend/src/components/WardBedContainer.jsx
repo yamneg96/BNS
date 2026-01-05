@@ -1,13 +1,26 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
-import { Bed, ArrowRightLeft, UserPlus, Save, Stethoscope, AlertCircle, Sparkles, Check, X, Lock } from 'lucide-react';
+import { Bed, ArrowRightLeft, UserPlus, Save, Stethoscope, AlertCircle, Sparkles, Check, X, Lock, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getAIPrediction } from '../services/aiService';
 import { useNavigate } from 'react-router-dom';
 
-const WardBedContainer = memo(({ ward, deptId, departments, patientData, transferData, onPatientChange, onTransferChange, onAdmit, onDischarge, onSaveInfo, user }) => {
+const WardBedContainer = memo(({ 
+  ward, 
+  deptId, 
+  departments, 
+  patientData, 
+  transferData, 
+  onPatientChange, 
+  onTransferChange, 
+  onAdmit, 
+  onDischarge, 
+  onSaveInfo, // This handles recording new info
+  onUpdateInfo, // Ensure this is passed from your updated BedContext/Beds.jsx
+  user 
+}) => {
   const scrollRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [tempPrediction, setTempPrediction] = useState({}); // Local state for pending AI answers
+  const [tempPrediction, setTempPrediction] = useState({}); 
   const [see, setSee] = useState(false);
   const navigate = useNavigate();
 
@@ -27,15 +40,10 @@ const WardBedContainer = memo(({ ward, deptId, departments, patientData, transfe
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  console.log("DEBUG - Full User Object:", user);
-console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
-  // --- AI Prediction Function with Provider Support ---
   const handleAIPrediction = async (bedId, complaint, provider = 'groq') => {
-    // Check AI Subscription
     if (!user.aiAccess?.isActive) {
       return toast.error("AI Premium Subscription required to use this feature.");
     }
-
     if (!complaint) {
       return toast.error("Please enter a chief complaint first");
     }
@@ -43,12 +51,10 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
     const loadingToast = toast.loading(`${provider.toUpperCase()} is analyzing symptoms...`);
     try {
       const data = await getAIPrediction(complaint, provider);
-      
       setTempPrediction(prev => ({
         ...prev,
         [bedId]: { diagnosis: data.diagnosis, riskLevel: data.riskLevel }
       }));
-
       toast.success(`${provider.toUpperCase()} Analysis Complete.`, { id: loadingToast });
     } catch (err) {
       console.error(err);
@@ -91,12 +97,10 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
           const currentAge = patientData[bed.id]?.age ?? bed.patient?.age ?? "";
           const currentSex = patientData[bed.id]?.sex ?? bed.patient?.sex ?? "";
           const currentComplaint = patientData[bed.id]?.chiefComplaint ?? bed.patient?.chiefComplaint ?? "";
-          
           const currentDiagnosis = patientData[bed.id]?.prediction?.diagnosis ?? bed.patient?.prediction?.diagnosis ?? "";
           const currentRiskLevel = patientData[bed.id]?.prediction?.riskLevel ?? bed.patient?.prediction?.riskLevel ?? "";
 
           const pendingAI = tempPrediction[bed.id];
-
           const tData = transferData[bed.id] || {};
           const tDept = departments.find(d => d._id === tData.deptId);
           const tWard = tDept?.wards.find(w => w.name === tData.wardName);
@@ -233,42 +237,24 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                       </p>
                     </div>
                     
-                    {/* Multi-Provider Button Group - Protection logic added here */}
                     <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide">
                       {user?.aiAccess?.isActive === true ? (
-                        <>
-{/**                          <button 
-                            type="button"
-                            onClick={() => handleAIPrediction(bed.id, currentComplaint, 'gemini')}
-                            className="flex-1 whitespace-nowrap text-[8px] bg-blue-600 text-white px-2 py-1.5 rounded-lg font-black hover:bg-blue-700 transition-all flex items-center justify-center gap-1 shadow-sm"
-                          >
-                            <Sparkles size={10} /> GEMINI
-                          </button> */}
-                           <button 
-                            type="button"
-                            onClick={() => handleAIPrediction(bed.id, currentComplaint, 'groq')}
-                            className="flex-1 whitespace-nowrap text-[8px] bg-orange-600 text-white p-2 rounded-lg font-black hover:bg-orange-700 transition-all flex items-center justify-center gap-1 shadow-sm"
-                          >
-                            <Sparkles size={10} /> AI Predict
-                          </button>
-                          {/**<button 
-                            type="button"
-                            onClick={() => handleAIPrediction(bed.id, currentComplaint, 'gbt')}
-                            className="flex-1 whitespace-nowrap text-[8px] bg-emerald-600 text-white px-2 py-1.5 rounded-lg font-black hover:bg-emerald-700 transition-all flex items-center justify-center gap-1 shadow-sm"
-                          >
-                            <Sparkles size={10} /> GPT-4
-                          </button>*/}
-                        </>
+                        <button 
+                          type="button"
+                          onClick={() => handleAIPrediction(bed.id, currentComplaint, 'groq')}
+                          className="flex-1 whitespace-nowrap text-[8px] bg-orange-600 text-white p-2 rounded-lg font-black hover:bg-orange-700 transition-all flex items-center justify-center gap-1 shadow-sm"
+                        >
+                          <Sparkles size={10} /> AI Predict
+                        </button>
                       ) : (
                         <div className="w-full py-2 bg-slate-50 border border-dashed border-slate-200 rounded-lg text-center">
-                           <p className="text-[7px] font-black text-slate-900 uppercase">AI Tools Locked 🔒</p>
-                           <button onClick={() => {navigate('/screenshot'); sessionStorage.setItem('ai', true)}} className='underline font-extrabold text-green-500 animate-pulse italic cp'>Unlock Here</button>
+                            <p className="text-[7px] font-black text-slate-900 uppercase">AI Tools Locked 🔒</p>
+                            <button onClick={() => {navigate('/screenshot'); sessionStorage.setItem('ai', true)}} className='underline font-extrabold text-green-500 animate-pulse italic cp'>Unlock Here</button>
                         </div>
                       )}
                     </div>
                   </div>
                   
-                  {/* Diagnosis Input */}
                   <div className={`relative rounded-2xl p-0.5 bg-gradient-to-br ${
                     currentRiskLevel === 'high' ? 'from-red-200 to-rose-100' : 
                     currentRiskLevel === 'medium' ? 'from-amber-200 to-orange-100' : 
@@ -282,7 +268,6 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                     />
                   </div>
 
-                  {/* AI REVIEW OVERLAY */}
                   {pendingAI && (
                     <div className="mt-2 p-3 bg-indigo-50 border border-indigo-200 rounded-2xl animate-in slide-in-from-top duration-300">
                       <div className="flex justify-between items-start mb-2">
@@ -321,15 +306,27 @@ console.log("DEBUG - AI Path:", user?.aiAccess?.isActive);
                 </div>
 
                 <button 
-                  className="cp w-full flex items-center justify-center gap-2 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-md mt-2"
+                  className={`cp w-full flex items-center justify-center gap-2 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-md mt-2`}
                   onClick={() => {
-                    const patient = patientData[bed.id];
+                    const patient = patientData[bed.id] || bed.patient || {};
                     if (!patient?.name?.trim()) return toast.error("Name is required");
-                    onSaveInfo({ deptId, wardName: ward.name, bedId: bed.id, patient: patient });
-                    toast.success("Patient Information Saved.")
+
+                    const payload = { 
+                      deptId, 
+                      wardName: ward.name, 
+                      bedId: bed.id, 
+                      patient 
+                    };
+
+                    // Choose between update or initial record based on current bed state
+                    if (bed.patient !== null) {
+                      onUpdateInfo(payload);
+                    } else {
+                      onSaveInfo(payload);
+                    }
                   }}
                 >
-                  <Save size={14} /> Save Patient Info
+                  {bed.patient !== null ? <Save size={14} /> : <Send size={14} />} {bed.patient !== null ? "Update Clinical Record" : "Send Patient Info"}
                 </button>
 
                 <div className="h-[1px] bg-slate-100 my-2" />

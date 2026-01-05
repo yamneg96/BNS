@@ -6,7 +6,7 @@ import {
 } from "../services/bed";
 import { toast } from "react-hot-toast";
 import { useAuth } from "./AuthContext";
-import { sendPatientInfo } from "../services/department";
+import { sendPatientInfo, updatePatientInfo } from "../services/department";
 
 const BedContext = createContext();
 
@@ -87,6 +87,21 @@ export const BedProvider = ({ children }) => {
     }
   };
 
+  const updatePatientRecord = async (info) => {
+    try {
+      // Determine if we should update or record new
+      // If the bed already has a patient object, we use update
+      const res = await updatePatientInfo(info); 
+      
+      // Refresh departments to show updated data
+      await fetchDepartments(); 
+      toast.success("Patient record updated successfully");
+      return res;
+    } catch (err) {
+      console.error("Update failed", err);
+      toast.error(err.response?.data?.message || "Failed to update record");
+    }
+  };
 
   return (
     <BedContext.Provider
@@ -97,6 +112,7 @@ export const BedProvider = ({ children }) => {
         discharge,
         loadDepartments,
         recordPatientInfo,
+        updatePatientRecord,
       }}
     >
       {children}

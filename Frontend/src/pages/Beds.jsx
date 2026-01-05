@@ -8,7 +8,7 @@ import WardBedContainer from "../components/WardBedContainer";
 
 const Beds = () => {
   const { user } = useAuth();
-  const { departments, loading, admit, discharge, recordPatientInfo } = useBed();
+  const { departments, loading, admit, discharge, recordPatientInfo, updatePatientInfo } = useBed();
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -114,6 +114,7 @@ const Beds = () => {
                     onAdmit={admit}
                     onDischarge={discharge}
                     onSaveInfo={recordPatientInfo}
+                    onUpdateInfo={updatePatientInfo}
                     user={user}
                   />
                 </div>
