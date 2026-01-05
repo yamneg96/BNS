@@ -170,6 +170,77 @@ export const recordPatientInBed = async (req, res) => {
   }
 };
 
+// Update patient info in a bed (and save history)
+export const updatePatientInBed = async (req, res) => {
+  try {
+    const { deptId, wardName, bedId, patient } = req.body;
+    const userId = req.user?._id;
+
+    if (
+      !deptId ||
+      !wardName ||
+      bedId === undefined ||
+      !patient
+    ) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const department = await Department.findById(deptId);
+    if (!department)
+      return res.status(404).json({ message: "Department not found" });
+
+    const ward = department.wards.find(w => w.name === wardName);
+    if (!ward)
+      return res.status(404).json({ message: "Ward not found" });
+
+    const bed = ward.beds.find(b => b.id === Number(bedId));
+    if (!bed)
+      return res.status(404).json({ message: "Bed not found" });
+
+    if (!bed.patient) {
+      return res.status(400).json({ message: "No patient currently assigned to this bed" });
+    }
+
+    // Update current patient 
+    bed.patient = {
+      ...bed.patient,
+      ...patient,
+      updatedAt: new Date(),
+    };
+
+    await department.save();
+
+    //Save update to history 
+    await PatientHistory.create({
+      department: deptId,
+      wardName,
+      bedId: Number(bedId),
+      patient: {
+        name: bed.patient.name,
+        age: bed.patient.age,
+        sex: bed.patient.sex,
+        chiefComplaint: bed.patient.chiefComplaint,
+        prediction: bed.patient.prediction || {},
+      },
+      recordedBy: userId,
+      action: "update",
+    });
+
+    return res.json({
+      message: "Patient record updated successfully",
+      bed: {
+        id: bed.id,
+        patient: bed.patient,
+      },
+    });
+
+  } catch (error) {
+    console.error("updatePatientInBed error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 
 // Discharge patient
