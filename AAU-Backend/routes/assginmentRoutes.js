@@ -1,5 +1,5 @@
 import express from "express";
-import {createAssignment,} from "../controllers/assignmentController.js";
+import {createAssignment, getMyAssignments,} from "../controllers/assignmentController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 router.post("/", protect, createAssignment);
 //router.get("/user/:userId/expiry", protect, getAssignmentExpiryForUser);
 // Protected route: any logged-in user can view their assignments
-//router.get("/my", protect, getMyAssignments);
+router.get("/my", protect, getMyAssignments);
 //router.put("/:id", protect, updateAssignment);
 
 //router.patch("/:id/expiry", protect, updateExpiryDates);
