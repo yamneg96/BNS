@@ -89,3 +89,37 @@ export const createAssignment = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const getMyAssignments = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const assignments = await Assignment.find({ user: userId, isActive: true })
+      .populate("department", "name wards")
+      .populate("createdBy", "name email role");
+
+    const result = assignments.map(a => {
+      const ward = a.department.wards.find(w => w.name === a.wardName);
+      const room = ward?.rooms.find(r => r.roomNumber === a.roomNumber);
+      const beds = room
+        ? room.beds.filter(b => a.bedNumbers.includes(b.bedNumber))
+        : [];
+
+      return {
+        _id: a._id,
+        department: a.department.name,
+        ward: a.wardName,
+        room: a.roomNumber,
+        beds,
+        deptExpiry: a.deptExpiry,
+        wardExpiry: a.wardExpiry,
+        note: a.note,
+      };
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
