@@ -123,3 +123,36 @@ export const getMyAssignments = async (req, res) => {
   }
 };
 
+export const addBedsToAssignment = async (req, res) => {
+  const { id } = req.params;
+  const { bedNumbers } = req.body;
+
+  const assignment = await Assignment.findById(id);
+  if (!assignment) return res.status(404).json({ message: "Assignment not found" });
+
+  const department = await Department.findById(assignment.department);
+  const ward = department.wards.find(w => w.name === assignment.wardName);
+  const room = ward.rooms.find(r => r.roomNumber === assignment.roomNumber);
+
+  for (const bn of bedNumbers) {
+    const bed = room.beds.find(b => b.bedNumber === bn);
+    if (!bed) return res.status(404).json({ message: `Bed ${bn} not found` });
+
+    if (bed.assignedUser && String(bed.assignedUser) !== String(assignment.user)) {
+      return res.status(409).json({ message: `Bed ${bn} already assigned` });
+    }
+
+    bed.assignedUser = assignment.user;
+    bed.status = "occupied";
+
+    if (!assignment.bedNumbers.includes(bn)) {
+      assignment.bedNumbers.push(bn);
+    }
+  }
+
+  await department.save();
+  await assignment.save();
+
+  res.json({ message: "Beds added", assignment });
+};
+

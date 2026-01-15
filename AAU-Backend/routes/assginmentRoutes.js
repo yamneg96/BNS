@@ -1,5 +1,5 @@
 import express from "express";
-import {createAssignment, getMyAssignments,} from "../controllers/assignmentController.js";
+import {addBedsToAssignment, createAssignment, getMyAssignments,} from "../controllers/assignmentController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.get("/my", protect, getMyAssignments);
 //router.patch("/:id/expiry", protect, updateExpiryDates);
 
 // new bed management routes
-//router.patch("/:id/add-beds", protect, addBedsToAssignment);
+router.patch("/:id/add-beds", protect, addBedsToAssignment);
 //router.patch("/:id/remove-beds", protect, removeBedsFromAssignment);
 
 
