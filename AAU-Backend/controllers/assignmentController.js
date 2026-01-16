@@ -156,3 +156,37 @@ export const addBedsToAssignment = async (req, res) => {
   res.json({ message: "Beds added", assignment });
 };
 
+
+export const removeBedsFromAssignment = async (req, res) => {
+  const { id } = req.params;
+  const { bedNumbers } = req.body;
+
+  const assignment = await Assignment.findById(id);
+  const department = await Department.findById(assignment.department);
+
+  const ward = department.wards.find(w => w.name === assignment.wardName);
+  const room = ward.rooms.find(r => r.roomNumber === assignment.roomNumber);
+
+  for (const bn of bedNumbers) {
+    const bed = room.beds.find(b => b.bedNumber === bn);
+    if (bed && String(bed.assignedUser) === String(assignment.user)) {
+      bed.assignedUser = null;
+      bed.status = "available";
+    }
+  }
+
+  assignment.bedNumbers = assignment.bedNumbers.filter(
+    b => !bedNumbers.includes(b)
+  );
+
+  await department.save();
+
+  if (!assignment.bedNumbers.length) {
+    await assignment.deleteOne();
+    return res.json({ message: "Assignment removed (no beds left)" });
+  }
+
+  await assignment.save();
+  res.json({ message: "Beds removed", assignment });
+};
+
