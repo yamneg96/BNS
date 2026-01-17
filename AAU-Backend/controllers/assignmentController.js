@@ -190,3 +190,31 @@ export const removeBedsFromAssignment = async (req, res) => {
   res.json({ message: "Beds removed", assignment });
 };
 
+export const getAssignmentExpiryForUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const latestAssignment = await Assignment.findOne({
+      user: userId,
+      isActive: true,
+    })
+      .sort({ createdAt: -1 })
+      .select("deptExpiry wardExpiry roomNumber wardName");
+
+    if (!latestAssignment) {
+      return res.json(null);
+    }
+
+    res.json({
+      ward: latestAssignment.wardName,
+      room: latestAssignment.roomNumber,
+      deptExpiry: latestAssignment.deptExpiry,
+      wardExpiry: latestAssignment.wardExpiry,
+    });
+  } catch (err) {
+    console.error("getAssignmentExpiryForUser error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
