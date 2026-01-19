@@ -251,3 +251,106 @@ export const updateExpiryDates = async (req, res) => {
 };
 
 
+export const updateAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      deptId,
+      wardName,
+      roomNumber,
+      bedNumbers,
+      deptExpiry,
+      wardExpiry,
+      note,
+    } = req.body;
+
+    const assignment = await Assignment.findById(id);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+   
+    if (
+      assignment.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    
+    const oldDepartment = await Department.findById(assignment.department);
+    if (oldDepartment) {
+      const oldWard = oldDepartment.wards.find(w => w.name === assignment.wardName);
+      const oldRoom = oldWard?.rooms.find(r => r.roomNumber === assignment.roomNumber);
+
+     
+      if (oldRoom) {
+        for (const bn of assignment.bedNumbers) {
+          const bed = oldRoom.beds.find(b => b.bedNumber === bn);
+          if (bed && String(bed.assignedUser) === String(assignment.user)) {
+            bed.assignedUser = null;
+            bed.status = "available";
+          }
+        }
+        await oldDepartment.save();
+      }
+    }
+
+    
+    const department = await Department.findById(deptId);
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    const ward = department.wards.find(w => w.name === wardName);
+    if (!ward) {
+      return res.status(404).json({ message: "Ward not found" });
+    }
+
+    const room = ward.rooms.find(r => r.roomNumber === roomNumber);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+   
+    for (const bn of bedNumbers) {
+      const bed = room.beds.find(b => b.bedNumber === bn);
+      if (!bed) {
+        return res.status(404).json({ message: `Bed ${bn} not found` });
+      }
+      if (bed.assignedUser && String(bed.assignedUser) !== String(assignment.user)) {
+        return res.status(409).json({ message: `Bed ${bn} already assigned` });
+      }
+    }
+
+   
+    for (const bn of bedNumbers) {
+      const bed = room.beds.find(b => b.bedNumber === bn);
+      bed.assignedUser = assignment.user;
+      bed.status = "occupied";
+    }
+
+    await department.save();
+
+   
+    assignment.department = deptId;
+    assignment.wardName = wardName;
+    assignment.roomNumber = roomNumber;
+    assignment.bedNumbers = bedNumbers;
+    assignment.deptExpiry = deptExpiry ? new Date(deptExpiry) : assignment.deptExpiry;
+    assignment.wardExpiry = wardExpiry ? new Date(wardExpiry) : assignment.wardExpiry;
+    assignment.note = note ?? assignment.note;
+
+    await assignment.save();
+
+    res.json({
+      message: "Assignment updated successfully",
+      assignment,
+    });
+  } catch (err) {
+    console.error("updateAssignment error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
