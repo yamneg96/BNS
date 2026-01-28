@@ -151,3 +151,28 @@ export const updatePatientInBed = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+/* -------------------- DISCHARGE PATIENT -------------------- */
+export const dischargePatient = async (req, res) => {
+    try {
+        const { deptId, wardName, roomNumber, bedNumber } = req.body;
+
+        const department = await Department.findById(deptId);
+        const ward = department?.wards.find(w => w.name === wardName);
+        const room = ward?.rooms.find(r => r.roomNumber === roomNumber);
+        const bed = room?.beds.find(b => b.bedNumber === bedNumber);
+
+        if (!bed || !bed.assignedUser) {
+            return res.status(400).json({ message: "Invalid discharge" });
+        }
+
+        bed.status = "available";
+        bed.patient = null;
+
+        await department.save();
+
+        res.json({ message: "Patient discharged" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
