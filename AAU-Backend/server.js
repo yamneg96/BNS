@@ -8,7 +8,7 @@ import { startSubscriptionNotificationJob } from "./cronJobs/subscriptionExpiryJ
 
 import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
-// import departmentRoutes from "./routes/departmentRoutes.js";
+import departmentRoutes from "./routes/departmentRoutes.js";
 import assignmentRoutes from './routes/assignmentRoutes.js';
 // import adminRoutes from "./routes/adminRoutes.js";
 // import supervisorRoutes from "./routes/supervisorRoutes.js";
@@ -29,7 +29,7 @@ const allowedOrigins = [
   "http://localhost:5173",          // local dev
   "https://bednotify.vercel.app",   // your deployed frontend
   "https://bnst-ao5j.vercel.app",
-  "http://localhost:5000"       
+  "http://localhost:5000"
 ];
 
 app.use(
@@ -48,7 +48,7 @@ app.use(
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
-// app.use("/api/departments", departmentRoutes);
+app.use("/api/departments", departmentRoutes);
 app.use("/api/assignments", assignmentRoutes);
 // app.use("/api/admin", adminRoutes);
 // app.use("/api/supervisor", supervisorRoutes);
