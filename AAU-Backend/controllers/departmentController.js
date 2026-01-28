@@ -118,3 +118,36 @@ export const recordPatientInBed = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+/* -------------------- UPDATE PATIENT -------------------- */
+export const updatePatientInBed = async (req, res) => {
+    try {
+        const { deptId, wardName, roomNumber, bedNumber, patient } = req.body;
+
+        const department = await Department.findById(deptId);
+        const ward = department?.wards.find(w => w.name === wardName);
+        const room = ward?.rooms.find(r => r.roomNumber === roomNumber);
+        const bed = room?.beds.find(b => b.bedNumber === bedNumber);
+
+        if (!bed || !bed.patient) {
+            return res.status(404).json({ message: "No patient in this bed" });
+        }
+
+        bed.patient = { ...bed.patient, ...patient };
+        await department.save();
+
+        await PatientHistory.create({
+            department: deptId,
+            wardName,
+            roomNumber,
+            bedId: bedNumber,
+            patient: bed.patient,
+            recordedBy: req.user._id,
+            action: "update",
+        });
+
+        res.json({ message: "Patient updated", bed });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

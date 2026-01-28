@@ -1,6 +1,6 @@
 
 import express from "express";
-import { admitPatient, getBedPatient, getDepartment, getDepartments, recordPatientInBed, } from "../controllers/departmentController.js";
+import { admitPatient, getBedPatient, getDepartment, getDepartments, recordPatientInBed, updatePatientInBed, } from "../controllers/departmentController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -14,6 +14,6 @@ router.get("/:deptId/wards/:wardName/rooms/:roomNumber/beds/:bedNumber/patient",
 router.post("/admit", protect, admitPatient);
 router.post("/patient", protect, recordPatientInBed);
 //router.post("/discharge", protect, dischargePatient);
-//router.put("/update-patient", protect, updatePatientInBed);
+router.put("/update-patient", protect, updatePatientInBed);
 
 export default router;
