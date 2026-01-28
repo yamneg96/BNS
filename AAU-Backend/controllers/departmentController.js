@@ -86,3 +86,35 @@ export const admitPatient = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+/* -------------------- RECORD PATIENT -------------------- */
+export const recordPatientInBed = async (req, res) => {
+    try {
+        const { deptId, wardName, roomNumber, bedNumber, patient } = req.body;
+
+        const department = await Department.findById(deptId);
+        const ward = department?.wards.find(w => w.name === wardName);
+        const room = ward?.rooms.find(r => r.roomNumber === roomNumber);
+        const bed = room?.beds.find(b => b.bedNumber === bedNumber);
+
+        if (!bed) return res.status(404).json({ message: "Bed not found" });
+
+        bed.patient = { ...patient, admittedAt: new Date() };
+        bed.status = "occupied";
+
+        await department.save();
+
+        await PatientHistory.create({
+            department: deptId,
+            wardName,
+            roomNumber,
+            bedId: bedNumber,
+            patient,
+            recordedBy: req.user._id,
+        });
+
+        res.status(201).json({ message: "Patient recorded", bed });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
