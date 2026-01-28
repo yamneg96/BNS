@@ -16,3 +16,14 @@ export const getDepartments = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+/* -------------------- GET SINGLE DEPARTMENT -------------------- */
+export const getDepartment = async (req, res) => {
+    try {
+        const dept = await Department.findById(req.params.id);
+        if (!dept) return res.status(404).json({ message: "Department not found" });
+        res.json(dept);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
