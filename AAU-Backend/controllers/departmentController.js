@@ -27,3 +27,18 @@ export const getDepartment = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+/* -------------------- GET PATIENT IN BED -------------------- */
+export const getBedPatient = async (req, res) => {
+    const { deptId, wardName, roomNumber, bedNumber } = req.params;
+
+    const department = await Department.findById(deptId);
+    const ward = department?.wards.find(w => w.name === wardName);
+    const room = ward?.rooms.find(r => r.roomNumber === roomNumber);
+    const bed = room?.beds.find(b => b.bedNumber === Number(bedNumber));
+
+    if (!bed) return res.status(404).json({ message: "Bed not found" });
+
+    res.json({ bedNumber: bed.bedNumber, patient: bed.patient });
+};
