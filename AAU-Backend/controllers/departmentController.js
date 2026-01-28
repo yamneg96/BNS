@@ -176,3 +176,17 @@ export const dischargePatient = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+/* -------------------- PATIENT HISTORY -------------------- */
+export const getBedPatientHistory = async (req, res) => {
+    const { deptId, wardName, roomNumber, bedNumber } = req.params;
+
+    const history = await PatientHistory.find({
+        department: deptId,
+        wardName,
+        roomNumber,
+        bedId: Number(bedNumber),
+    }).sort({ createdAt: -1 });
+
+    res.json(history);
+};
