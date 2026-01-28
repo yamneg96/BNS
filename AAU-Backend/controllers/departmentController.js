@@ -42,3 +42,47 @@ export const getBedPatient = async (req, res) => {
 
     res.json({ bedNumber: bed.bedNumber, patient: bed.patient });
 };
+
+/* -------------------- ADMIT PATIENT -------------------- */
+export const admitPatient = async (req, res) => {
+    try {
+        const { deptId, wardName, roomNumber, bedNumber } = req.body;
+        const userId = req.user._id;
+
+        const department = await Department.findById(deptId);
+        const ward = department?.wards.find(w => w.name === wardName);
+        const room = ward?.rooms.find(r => r.roomNumber === roomNumber);
+        const bed = room?.beds.find(b => b.bedNumber === bedNumber);
+
+        if (!bed) return res.status(404).json({ message: "Bed not found" });
+        if (!bed.assignedUser) {
+            return res.status(400).json({ message: "No user assigned to this bed" });
+        }
+        if (String(bed.assignedUser) === String(userId)) {
+            return res.status(400).json({ message: "You cannot notify yourself" });
+        }
+
+        const assignedUser = await User.findById(bed.assignedUser);
+
+        bed.status = "occupied";
+        await department.save();
+
+        const msg = `Patient admitted to Bed ${bed.bedNumber}, Room ${room.roomNumber}, Ward ${ward.name}`;
+
+        await sendEmail(assignedUser.email, "Patient Admission", msg);
+
+        await Notification.create({
+            user: assignedUser._id,
+            from: userId,
+            type: "admit",
+            bedId: bed.bedNumber,
+            wardName,
+            departmentName: department.name,
+            message: msg,
+        });
+
+        res.json({ message: "Patient admitted & notification sent" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
