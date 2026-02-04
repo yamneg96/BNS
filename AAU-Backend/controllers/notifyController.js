@@ -29,3 +29,25 @@ export const getNotificationsForUser = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+
+export const getUnreadNotificationCount = async (req, res) => {
+    try {
+        const { departmentName, wardName, roomNumber } = req.query;
+
+        const query = {
+            user: req.user._id,
+            read: false,
+        };
+
+        if (departmentName) query.departmentName = departmentName;
+        if (wardName) query.wardName = wardName;
+        if (roomNumber) query.roomNumber = roomNumber;
+
+        const count = await Notification.countDocuments(query);
+
+        res.json({ count });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
