@@ -52,7 +52,6 @@ export const getUnreadNotificationCount = async (req, res) => {
     }
 };
 
-
 export const markAsRead = async (req, res) => {
     try {
         const { id } = req.params;
@@ -75,6 +74,28 @@ export const markAsRead = async (req, res) => {
             message: "Notification marked as read",
             notification,
         });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
+export const markAllAsRead = async (req, res) => {
+    try {
+        const { departmentName, wardName, roomNumber } = req.body;
+
+        const query = {
+            user: req.user._id,
+            read: false,
+        };
+
+        if (departmentName) query.departmentName = departmentName;
+        if (wardName) query.wardName = wardName;
+        if (roomNumber) query.roomNumber = roomNumber;
+
+        await Notification.updateMany(query, { read: true });
+
+        res.json({ message: "All notifications marked as read" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
