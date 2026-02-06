@@ -50,3 +50,19 @@ export const addDepartment = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+// Delete department
+export const deleteDepartment = async (req, res) => {
+    try {
+        const { deptId } = req.params;
+
+        const department = await Department.findByIdAndDelete(deptId);
+        if (!department)
+            return res.status(404).json({ message: "Department not found" });
+
+        res.json({ message: "Department deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+

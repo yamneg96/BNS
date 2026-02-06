@@ -1,5 +1,5 @@
 import express from "express";
-import { addDepartment, getAllDepartments, getAllUsers, } from "../controllers/supervisorController.js";
+import { addDepartment, deleteDepartment, getAllDepartments, getAllUsers, } from "../controllers/supervisorController.js";
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get("/users", getAllUsers);
 /* DEPARTMENTS */
 router.get("/", getAllDepartments);
 router.post("/", addDepartment);
-//router.delete("/:deptId", deleteDepartment);
+router.delete("/:deptId", deleteDepartment);
 
 /* WARDS */
 //router.post("/:deptId/wards", addWard);
