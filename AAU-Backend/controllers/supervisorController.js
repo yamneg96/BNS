@@ -66,3 +66,24 @@ export const deleteDepartment = async (req, res) => {
     }
 };
 
+/* ================= WARDS ================= */
+
+// Add ward
+export const addWard = async (req, res) => {
+    try {
+        const { deptId } = req.params;
+        const { name } = req.body;
+
+        const department = await Department.findById(deptId);
+        if (!department)
+            return res.status(404).json({ message: "Department not found" });
+
+        department.wards.push({ name, rooms: [] });
+        await department.save();
+
+        res.status(201).json({ message: "Ward added", department });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
