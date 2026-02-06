@@ -35,3 +35,18 @@ export const getAllDepartments = async (req, res) => {
     }
 };
 
+// Add department
+export const addDepartment = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name)
+            return res.status(400).json({ message: "Department name is required" });
+
+        const department = new Department({ name, wards: [] });
+        await department.save();
+
+        res.status(201).json({ message: "Department created", department });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
