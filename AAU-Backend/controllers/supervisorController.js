@@ -14,3 +14,24 @@ export const getAllUsers = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+/* ================= DEPARTMENTS ================= */
+
+// Get all departments → wards → rooms → beds
+export const getAllDepartments = async (req, res) => {
+    try {
+        const departments = await Department.find()
+            .populate({
+                path: "wards.rooms.beds.assignedUser",
+                select: "name email role image",
+            });
+
+        res.status(200).json(departments);
+    } catch (err) {
+        res.status(500).json({
+            message: "Error fetching departments",
+            error: err.message,
+        });
+    }
+};
+
