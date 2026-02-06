@@ -87,3 +87,24 @@ export const addWard = async (req, res) => {
     }
 };
 
+// Delete ward
+export const deleteWard = async (req, res) => {
+    try {
+        const { deptId, wardId } = req.params;
+
+        const department = await Department.findById(deptId);
+        if (!department)
+            return res.status(404).json({ message: "Department not found" });
+
+        const ward = department.wards.id(wardId);
+        if (!ward)
+            return res.status(404).json({ message: "Ward not found" });
+
+        ward.remove();
+        await department.save();
+
+        res.json({ message: "Ward deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
