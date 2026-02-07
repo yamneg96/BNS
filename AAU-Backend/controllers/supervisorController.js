@@ -194,3 +194,33 @@ export const addBed = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+// Delete bed
+export const deleteBed = async (req, res) => {
+    try {
+        const { deptId, wardId, roomId, bedId } = req.params;
+
+        const department = await Department.findById(deptId);
+        if (!department)
+            return res.status(404).json({ message: "Department not found" });
+
+        const ward = department.wards.id(wardId);
+        if (!ward)
+            return res.status(404).json({ message: "Ward not found" });
+
+        const room = ward.rooms.id(roomId);
+        if (!room)
+            return res.status(404).json({ message: "Room not found" });
+
+        const bed = room.beds.id(bedId);
+        if (!bed)
+            return res.status(404).json({ message: "Bed not found" });
+
+        bed.remove();
+        await department.save();
+
+        res.json({ message: "Bed deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
