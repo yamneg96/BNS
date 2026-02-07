@@ -108,3 +108,28 @@ export const deleteWard = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+/* ================= ROOMS ================= */
+
+// Add room
+export const addRoom = async (req, res) => {
+    try {
+        const { deptId, wardId } = req.params;
+        const { roomNumber } = req.body;
+
+        const department = await Department.findById(deptId);
+        if (!department)
+            return res.status(404).json({ message: "Department not found" });
+
+        const ward = department.wards.id(wardId);
+        if (!ward)
+            return res.status(404).json({ message: "Ward not found" });
+
+        ward.rooms.push({ roomNumber, beds: [] });
+        await department.save();
+
+        res.status(201).json({ message: "Room added", ward });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
