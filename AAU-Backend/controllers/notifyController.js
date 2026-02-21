@@ -1,0 +1,103 @@
+import Notification from "../models/Notification.js";
+
+export const getNotificationsForUser = async (req, res) => {
+    try {
+        const {
+            departmentName,
+            wardName,
+            roomNumber,
+            bedNumber,
+            read,
+        } = req.query;
+
+        const query = { user: req.user._id };
+
+        // Room-aware filters
+        if (departmentName) query.departmentName = departmentName;
+        if (wardName) query.wardName = wardName;
+        if (roomNumber) query.roomNumber = roomNumber;
+        if (bedNumber) query.bedNumber = Number(bedNumber);
+        if (read !== undefined) query.read = read === "true";
+
+        const notifications = await Notification.find(query)
+            .populate("from", "name email image")
+            .sort({ createdAt: -1 })
+            .limit(50);
+
+        res.json(notifications);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
+export const getUnreadNotificationCount = async (req, res) => {
+    try {
+        const { departmentName, wardName, roomNumber } = req.query;
+
+        const query = {
+            user: req.user._id,
+            read: false,
+        };
+
+        if (departmentName) query.departmentName = departmentName;
+        if (wardName) query.wardName = wardName;
+        if (roomNumber) query.roomNumber = roomNumber;
+
+        const count = await Notification.countDocuments(query);
+
+        res.json({ count });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+export const markAsRead = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const notification = await Notification.findById(id);
+
+        if (!notification) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+
+        // Authorization check
+        if (notification.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        notification.read = true;
+        await notification.save();
+
+        res.json({
+            message: "Notification marked as read",
+            notification,
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
+export const markAllAsRead = async (req, res) => {
+    try {
+        const { departmentName, wardName, roomNumber } = req.body;
+
+        const query = {
+            user: req.user._id,
+            read: false,
+        };
+
+        if (departmentName) query.departmentName = departmentName;
+        if (wardName) query.wardName = wardName;
+        if (roomNumber) query.roomNumber = roomNumber;
+
+        await Notification.updateMany(query, { read: true });
+
+        res.json({ message: "All notifications marked as read" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
