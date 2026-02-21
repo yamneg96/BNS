@@ -29,6 +29,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://bednotify.vercel.app",
   "https://bns-iota-three.vercel.app",
+  "http://localhost:8081",
 ];
 
 app.use(
